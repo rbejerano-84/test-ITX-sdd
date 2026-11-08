@@ -11,3 +11,7 @@ Servicio REST para consultar el precio aplicable a un producto y una cadena en u
 - **S-5 — Alcance:** el servicio solo consulta precios existentes; no crea tarifas, convierte monedas, autentica clientes ni limita peticiones.
 
 Los identificadores de producto y cadena deben ser positivos. Si no hay una tarifa aplicable, la respuesta es `404`.
+
+## Contrato generado
+
+`mvn generate-sources` genera la interfaz y los modelos en `target/generated-sources/openapi`; esos archivos no se versionan. El DTO del contrato `com.example.prices.infrastructure.adapter.in.rest.generated.model.ProblemDetail` y el tipo HTTP `org.springframework.http.ProblemDetail` conservan paquetes distintos. La interfaz generada usa el DTO del contrato; el manejo de errores REST debe referirse explícitamente al tipo de Spring, sin importar ambos nombres simples en una misma clase.
