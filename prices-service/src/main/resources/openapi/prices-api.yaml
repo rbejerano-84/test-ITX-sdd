@@ -1,0 +1,271 @@
+openapi: 3.0.3
+info:
+  title: Prices API
+  description: Consulta de la tarifa y el precio final aplicable a un producto de una cadena en una fecha dada.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local
+tags:
+  - name: Prices
+    description: Consulta de precios
+
+paths:
+  /api/v1/prices:
+    get:
+      tags: [Prices]
+      operationId: getApplicablePrice
+      summary: Obtiene el precio aplicable
+      description: >
+        Devuelve la tarifa aplicable para la fecha, producto y cadena indicados.
+        Si varias tarifas coinciden en el rango de fechas, se aplica la de mayor prioridad;
+        ante empate de prioridad, la de mayor identificador de tarifa.
+        El rango de fechas es inclusivo en ambos extremos.
+      parameters:
+        - name: applicationDate
+          in: query
+          required: true
+          description: Fecha y hora de aplicación en hora local, sin zona (ISO-8601).
+          schema:
+            type: string
+            format: date-time
+          example: "2020-06-14T10:00:00"
+        - name: productId
+          in: query
+          required: true
+          description: Identificador del producto.
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+          example: 35455
+        - name: brandId
+          in: query
+          required: true
+          description: Identificador de la cadena del grupo (1 = ZARA).
+          schema:
+            type: integer
+            format: int64
+            minimum: 1
+          example: 1
+      responses:
+        "200":
+          description: Precio aplicable encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceResponse"
+              example:
+                productId: 35455
+                brandId: 1
+                priceList: 1
+                startDate: "2020-06-14T00:00:00"
+                endDate: "2020-12-31T23:59:59"
+                price: 35.50
+                currency: EUR
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+        "406":
+          $ref: "#/components/responses/NotAcceptable"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+components:
+  schemas:
+    PriceResponse:
+      type: object
+      required: [productId, brandId, priceList, startDate, endDate, price, currency]
+      properties:
+        productId:
+          type: integer
+          format: int64
+          example: 35455
+        brandId:
+          type: integer
+          format: int64
+          example: 1
+        priceList:
+          type: integer
+          format: int64
+          description: Identificador de la tarifa aplicada.
+          example: 1
+        startDate:
+          type: string
+          format: date-time
+          description: Inicio de aplicación de la tarifa (hora local, sin zona).
+          example: "2020-06-14T00:00:00"
+        endDate:
+          type: string
+          format: date-time
+          description: Fin de aplicación de la tarifa (hora local, sin zona).
+          example: "2020-12-31T23:59:59"
+        price:
+          type: number
+          description: Precio final de venta, con dos decimales.
+          example: 35.50
+        currency:
+          type: string
+          description: Moneda en formato ISO-4217.
+          example: EUR
+
+    ProblemDetail:
+      type: object
+      description: Respuesta de error según RFC 9457 (application/problem+json).
+      required: [title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          default: about:blank
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        errors:
+          type: array
+          description: Detalle por parámetro cuando el error es de validación.
+          items:
+            $ref: "#/components/schemas/FieldError"
+
+    FieldError:
+      type: object
+      required: [field, message]
+      properties:
+        field:
+          type: string
+          example: productId
+        message:
+          type: string
+          example: must be greater than or equal to 1
+
+  headers:
+    RetryAfter:
+      description: Segundos que el cliente debe esperar antes de reintentar.
+      schema:
+        type: integer
+        minimum: 0
+
+  responses:
+    BadRequest:
+      description: Parámetros ausentes, con tipo incorrecto o fuera de rango.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Bad Request
+            status: 400
+            detail: "Invalid value for parameter 'applicationDate'"
+            instance: /api/v1/prices
+    Unauthorized:
+      description: Respuesta generada por el gateway o la infraestructura cuando las credenciales están ausentes o no son válidas.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Unauthorized
+            status: 401
+            detail: Missing or invalid API key
+            instance: /api/v1/prices
+    Forbidden:
+      description: Respuesta generada por el gateway o la infraestructura cuando el cliente no tiene permiso para este recurso.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Forbidden
+            status: 403
+            detail: Access to this resource is denied
+            instance: /api/v1/prices
+    NotFound:
+      description: No existe tarifa aplicable para los datos indicados.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Price Not Found
+            status: 404
+            detail: "No applicable price for brand 1, product 35455 at 2019-01-01T10:00:00"
+            instance: /api/v1/prices
+    MethodNotAllowed:
+      description: Método HTTP no soportado en este recurso.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Method Not Allowed
+            status: 405
+            detail: "Method 'POST' is not supported"
+            instance: /api/v1/prices
+    NotAcceptable:
+      description: El recurso no puede responder en el formato solicitado en Accept.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Not Acceptable
+            status: 406
+            detail: Could not find acceptable representation
+            instance: /api/v1/prices
+    TooManyRequests:
+      description: Respuesta generada por el gateway o la infraestructura cuando se supera el límite de peticiones.
+      headers:
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Too Many Requests
+            status: 429
+            detail: Rate limit exceeded
+            instance: /api/v1/prices
+    InternalServerError:
+      description: Error inesperado del servidor. No se exponen detalles internos.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Internal Server Error
+            status: 500
+            detail: An unexpected error occurred
+            instance: /api/v1/prices
+    ServiceUnavailable:
+      description: Respuesta generada por el gateway o la infraestructura cuando el servicio no está disponible temporalmente.
+      headers:
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+          example:
+            title: Service Unavailable
+            status: 503
+            detail: Service temporarily unavailable
+            instance: /api/v1/prices
