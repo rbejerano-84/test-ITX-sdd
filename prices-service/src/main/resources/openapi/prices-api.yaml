@@ -2,6 +2,8 @@ openapi: 3.0.3
 info:
   title: Prices API
   description: Consulta de la tarifa y el precio final aplicable a un producto de una cadena en una fecha dada.
+  contact:
+    name: Prices Service team
   version: 1.0.0
 servers:
   - url: http://localhost:8080
@@ -138,7 +140,7 @@ components:
           type: string
         instance:
           type: string
-          format: uri
+          format: uri-reference
         errors:
           type: array
           description: Detalle por parámetro cuando el error es de validación.
@@ -175,6 +177,9 @@ components:
             status: 400
             detail: "Invalid value for parameter 'applicationDate'"
             instance: /api/v1/prices
+            errors:
+              - field: applicationDate
+                message: must be a valid local date-time
     Unauthorized:
       description: Respuesta generada por el gateway o la infraestructura cuando las credenciales están ausentes o no son válidas.
       content:
