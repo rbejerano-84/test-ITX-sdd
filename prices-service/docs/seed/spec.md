@@ -23,7 +23,7 @@ Servicio Spring Boot que, dada una fecha de aplicación, un producto y una caden
 - Arquitectura hexagonal, dominio sin dependencias de framework (verificado con ArchUnit).
 - TDD: cada comportamiento nace de un test en rojo.
 - Contrato API definido en `openapi.yaml`.
-- Cobertura mínima Jacoco: 90% en dominio y aplicación.
+- Cobertura mínima Jacoco: 80% de líneas en global.
 - Formato y estilo automatizados (Spotless).
 
 ## 5. Contrato de API

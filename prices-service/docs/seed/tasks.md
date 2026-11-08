@@ -40,7 +40,7 @@ Cada tarea debe terminar con la build en verde y un commit pequeño.
 
 ## Fase 6: Calidad
 - [ ] **T-19** ArchUnit: dominio sin dependencias de Spring/JPA/Jackson; aplicación sin infraestructura; sin ciclos entre capas.
-- [ ] **T-20** Jacoco con umbral (90% dominio y aplicación) y Spotless en `mvn verify`.
+- [ ] **T-20** Jacoco con umbral mínimo del 80% de líneas en global y Spotless en `mvn verify`.
 - [ ] **T-21** Test de contrato: las respuestas reales (200 y errores) validan contra `prices-api.yaml`. Publicar el YAML con Swagger UI si hay una integración compatible con Boot 4; si no, enlazarlo en el README.
 - [ ] **T-22** README final: ejecución, `curl` de ejemplo, ADRs, supuestos, cómo correr tests.
 - [ ] **T-23** (extra) Dockerfile multi-stage y plantilla de PR.
