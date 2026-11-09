@@ -17,13 +17,25 @@ class PriceSelectorTest {
 
   @Test
   void selectsThePriceWithTheHighestPriority() {
-    Price lowerPriority = price(1, 1, queryDate.minusDays(1), queryDate.plusDays(1));
+    Price lowerPriority = price(1, 9, queryDate.minusDays(1), queryDate.plusDays(1));
     Price higherPriority = price(2, 2, queryDate.minusDays(1), queryDate.plusDays(1));
 
     assertSame(
         higherPriority,
         selector
-            .selectApplicablePrice(List.of(lowerPriority, higherPriority), queryDate)
+            .selectApplicablePrice(List.of(higherPriority, lowerPriority), queryDate)
+            .orElseThrow());
+  }
+
+  @Test
+  void ignoresHigherPriorityPricesThatAreNotApplicableAtTheDate() {
+    Price applicablePrice = price(1, 9, queryDate.minusDays(1), queryDate.plusDays(1));
+    Price notApplicablePrice = price(5, 2, queryDate.minusDays(3), queryDate.minusDays(2));
+
+    assertSame(
+        applicablePrice,
+        selector
+            .selectApplicablePrice(List.of(notApplicablePrice, applicablePrice), queryDate)
             .orElseThrow());
   }
 
