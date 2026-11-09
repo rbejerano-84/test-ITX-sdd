@@ -5,14 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.prices.application.PriceRepository;
 import com.example.prices.domain.BrandId;
+import com.example.prices.domain.DateRange;
+import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
+import com.example.prices.domain.PriceListId;
 import com.example.prices.domain.ProductId;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,9 +27,11 @@ import java.util.TreeMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @DataJpaTest
+@Import({PricePersistenceAdapter.class, PriceEntityMapper.class})
 class PricePersistenceDataJpaTest {
 
   @Autowired private JdbcTemplate jdbcTemplate;
@@ -76,6 +83,18 @@ class PricePersistenceDataJpaTest {
   }
 
   @Test
+  void mapsEverySeededPriceToTheDomainModel() {
+    assertDomainPrice(
+        "2020-06-14T10:00:00", 1L, "35.50", 0, "2020-06-14T00:00:00", "2020-12-31T23:59:59");
+    assertDomainPrice(
+        "2020-06-14T16:00:00", 2L, "25.45", 1, "2020-06-14T15:00:00", "2020-06-14T18:30:00");
+    assertDomainPrice(
+        "2020-06-15T10:00:00", 3L, "30.50", 1, "2020-06-15T00:00:00", "2020-06-15T11:00:00");
+    assertDomainPrice(
+        "2020-06-16T21:00:00", 4L, "38.95", 1, "2020-06-15T16:00:00", "2020-12-31T23:59:59");
+  }
+
+  @Test
   void includesCandidatesAtEveryExactValidityBoundary() {
     assertCandidates("2020-06-14T00:00:00", 1L);
     assertCandidates("2020-12-31T23:59:59", 1L, 4L);
@@ -106,8 +125,36 @@ class PricePersistenceDataJpaTest {
             .stream()
             .map(Price::priceList)
             .map(priceList -> priceList.value())
+            .sorted()
             .toList();
     assertEquals(List.of(expectedPriceLists), actualPriceLists);
+  }
+
+  private void assertDomainPrice(
+      String applicationDate,
+      long expectedPriceList,
+      String expectedAmount,
+      int expectedPriority,
+      String expectedStart,
+      String expectedEnd) {
+    Price price =
+        priceRepository
+            .findApplicablePrices(
+                new BrandId(1), new ProductId(35455), LocalDateTime.parse(applicationDate))
+            .stream()
+            .filter(candidate -> candidate.priceList().value() == expectedPriceList)
+            .findFirst()
+            .orElseThrow();
+
+    assertEquals(new BrandId(1), price.brandId());
+    assertEquals(
+        new DateRange(LocalDateTime.parse(expectedStart), LocalDateTime.parse(expectedEnd)),
+        price.validityPeriod());
+    assertEquals(new PriceListId(expectedPriceList), price.priceList());
+    assertEquals(new ProductId(35455), price.productId());
+    assertEquals(expectedPriority, price.priority());
+    assertEquals(
+        new Money(new BigDecimal(expectedAmount), Currency.getInstance("EUR")), price.money());
   }
 
   private Map<String, ColumnDefinition> readColumns(DatabaseMetaData metadata) throws SQLException {
