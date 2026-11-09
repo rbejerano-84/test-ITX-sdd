@@ -1,12 +1,10 @@
 package com.example.prices.application;
 
-import com.example.prices.domain.BrandId;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceNotFoundException;
+import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.PriceRepository;
 import com.example.prices.domain.PriceSelector;
-import com.example.prices.domain.ProductId;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,13 +19,15 @@ public class GetApplicablePriceService implements GetApplicablePriceUseCase {
   }
 
   @Override
-  public Price getApplicablePrice(
-      BrandId brandId, ProductId productId, LocalDateTime applicationDate) {
-    List<Price> candidates =
-        priceRepository.findApplicablePrices(brandId, productId, applicationDate);
+  public Price getApplicablePrice(PriceQuery query) {
+    Objects.requireNonNull(query, "Price query is required");
+    List<Price> candidates = priceRepository.findApplicablePrices(query);
 
     return priceSelector
-        .selectApplicablePrice(candidates, applicationDate)
-        .orElseThrow(() -> new PriceNotFoundException(brandId, productId, applicationDate));
+        .selectApplicablePrice(candidates, query.applicationDate())
+        .orElseThrow(
+            () ->
+                new PriceNotFoundException(
+                    query.brandId(), query.productId(), query.applicationDate()));
   }
 }

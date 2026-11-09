@@ -1,11 +1,10 @@
 package com.example.prices.infrastructure.adapter.out.persistence;
 
-import com.example.prices.domain.BrandId;
 import com.example.prices.domain.Price;
+import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.PriceRepository;
-import com.example.prices.domain.ProductId;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +22,11 @@ public class PricePersistenceAdapter implements PriceRepository {
   }
 
   @Override
-  public List<Price> findApplicablePrices(
-      BrandId brandId, ProductId productId, LocalDateTime applicationDate) {
+  public List<Price> findApplicablePrices(PriceQuery query) {
+    Objects.requireNonNull(query, "Price query is required");
     return priceJpaRepository
-        .findApplicablePrices(brandId.value(), productId.value(), applicationDate)
+        .findApplicablePrices(
+            query.brandId().value(), query.productId().value(), query.applicationDate())
         .stream()
         .map(priceEntityMapper::toDomain)
         .toList();

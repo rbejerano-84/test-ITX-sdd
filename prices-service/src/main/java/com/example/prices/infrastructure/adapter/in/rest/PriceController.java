@@ -2,6 +2,7 @@ package com.example.prices.infrastructure.adapter.in.rest;
 
 import com.example.prices.application.GetApplicablePriceUseCase;
 import com.example.prices.domain.BrandId;
+import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.ProductId;
 import com.example.prices.infrastructure.adapter.in.rest.generated.api.PricesApi;
 import com.example.prices.infrastructure.adapter.in.rest.generated.model.PriceResponse;
@@ -29,6 +30,6 @@ public class PriceController implements PricesApi {
     return ResponseEntity.ok(
         priceRestMapper.toResponse(
             getApplicablePriceUseCase.getApplicablePrice(
-                new BrandId(brandId), new ProductId(productId), applicationDate)));
+                new PriceQuery(new BrandId(brandId), new ProductId(productId), applicationDate))));
   }
 }

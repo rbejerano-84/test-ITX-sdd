@@ -13,6 +13,7 @@ import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceListId;
 import com.example.prices.domain.PriceNotFoundException;
+import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.PriceRepository;
 import com.example.prices.domain.PriceSelector;
 import com.example.prices.domain.Priority;
@@ -33,35 +34,32 @@ class GetApplicablePriceServiceTest {
   private final BrandId brandId = new BrandId(1);
   private final ProductId productId = new ProductId(35455);
   private final LocalDateTime applicationDate = LocalDateTime.parse("2020-06-14T10:00:00");
+  private final PriceQuery query = new PriceQuery(brandId, productId, applicationDate);
 
   @Test
   void returnsThePriceSelectedByTheDomainSelector() {
     Price winningPrice = price(2, 2);
     Price candidate = price(1, 9);
     List<Price> candidates = List.of(winningPrice, candidate);
-    when(priceRepository.findApplicablePrices(brandId, productId, applicationDate))
-        .thenReturn(candidates);
+    when(priceRepository.findApplicablePrices(query)).thenReturn(candidates);
 
-    Price result = service.getApplicablePrice(brandId, productId, applicationDate);
+    Price result = service.getApplicablePrice(query);
 
     assertSame(winningPrice, result);
-    verify(priceRepository).findApplicablePrices(brandId, productId, applicationDate);
+    verify(priceRepository).findApplicablePrices(query);
   }
 
   @Test
   void throwsPriceNotFoundWhenThereAreNoCandidates() {
-    when(priceRepository.findApplicablePrices(brandId, productId, applicationDate))
-        .thenReturn(List.of());
+    when(priceRepository.findApplicablePrices(query)).thenReturn(List.of());
 
     PriceNotFoundException exception =
-        assertThrows(
-            PriceNotFoundException.class,
-            () -> service.getApplicablePrice(brandId, productId, applicationDate));
+        assertThrows(PriceNotFoundException.class, () -> service.getApplicablePrice(query));
 
     assertEquals(
         "No applicable price for brand 1, product 35455 at 2020-06-14T10:00",
         exception.getMessage());
-    verify(priceRepository).findApplicablePrices(brandId, productId, applicationDate);
+    verify(priceRepository).findApplicablePrices(query);
   }
 
   private Price price(int priority, long priceListId) {

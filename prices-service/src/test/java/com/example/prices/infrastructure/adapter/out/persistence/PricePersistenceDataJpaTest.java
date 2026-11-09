@@ -8,6 +8,7 @@ import com.example.prices.domain.DateRange;
 import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceListId;
+import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.PriceRepository;
 import com.example.prices.domain.Priority;
 import com.example.prices.domain.ProductId;
@@ -111,18 +112,21 @@ class PricePersistenceDataJpaTest {
     assertEquals(
         List.of(),
         priceRepository.findApplicablePrices(
-            new BrandId(2), new ProductId(35455), LocalDateTime.parse("2020-06-14T10:00:00")));
+            new PriceQuery(
+                new BrandId(2), new ProductId(35455), LocalDateTime.parse("2020-06-14T10:00:00"))));
     assertEquals(
         List.of(),
         priceRepository.findApplicablePrices(
-            new BrandId(1), new ProductId(99999), LocalDateTime.parse("2020-06-14T10:00:00")));
+            new PriceQuery(
+                new BrandId(1), new ProductId(99999), LocalDateTime.parse("2020-06-14T10:00:00"))));
   }
 
   private void assertCandidates(String applicationDate, Long... expectedPriceLists) {
     List<Long> actualPriceLists =
         priceRepository
             .findApplicablePrices(
-                new BrandId(1), new ProductId(35455), LocalDateTime.parse(applicationDate))
+                new PriceQuery(
+                    new BrandId(1), new ProductId(35455), LocalDateTime.parse(applicationDate)))
             .stream()
             .map(Price::priceList)
             .map(priceList -> priceList.value())
@@ -141,7 +145,8 @@ class PricePersistenceDataJpaTest {
     Price price =
         priceRepository
             .findApplicablePrices(
-                new BrandId(1), new ProductId(35455), LocalDateTime.parse(applicationDate))
+                new PriceQuery(
+                    new BrandId(1), new ProductId(35455), LocalDateTime.parse(applicationDate)))
             .stream()
             .filter(candidate -> candidate.priceList().value() == expectedPriceList)
             .findFirst()

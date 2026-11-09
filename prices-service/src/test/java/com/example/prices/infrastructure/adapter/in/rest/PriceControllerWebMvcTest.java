@@ -18,6 +18,7 @@ import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceListId;
 import com.example.prices.domain.PriceNotFoundException;
+import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.Priority;
 import com.example.prices.domain.ProductId;
 import java.math.BigDecimal;
@@ -54,8 +55,7 @@ class PriceControllerWebMvcTest {
 
   @Test
   void returnsContractPriceResponseForSuccessfulQuery() throws Exception {
-    when(getApplicablePriceUseCase.getApplicablePrice(
-            any(BrandId.class), any(ProductId.class), any(LocalDateTime.class)))
+    when(getApplicablePriceUseCase.getApplicablePrice(any(PriceQuery.class)))
         .thenReturn(applicablePrice());
 
     mockMvc
@@ -142,7 +142,7 @@ class PriceControllerWebMvcTest {
   @Test
   void returnsProblemWithRequestedParametersWhenNoPriceIsApplicable() throws Exception {
     when(getApplicablePriceUseCase.getApplicablePrice(
-            new BrandId(1), new ProductId(35455), APPLICATION_DATE))
+            new PriceQuery(new BrandId(1), new ProductId(35455), APPLICATION_DATE)))
         .thenThrow(
             new PriceNotFoundException(new BrandId(1), new ProductId(35455), APPLICATION_DATE));
 
@@ -195,7 +195,7 @@ class PriceControllerWebMvcTest {
   @Test
   void returnsGenericProblemForUnexpectedException(CapturedOutput output) throws Exception {
     when(getApplicablePriceUseCase.getApplicablePrice(
-            new BrandId(1), new ProductId(35455), APPLICATION_DATE))
+            new PriceQuery(new BrandId(1), new ProductId(35455), APPLICATION_DATE)))
         .thenThrow(new IllegalStateException("internal database credential"));
 
     mockMvc
