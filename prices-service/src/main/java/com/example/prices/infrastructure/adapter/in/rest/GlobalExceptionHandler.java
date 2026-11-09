@@ -23,11 +23,14 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   private static final MediaType PROBLEM_JSON = MediaType.valueOf("application/problem+json");
+  private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
   @ExceptionHandler(PriceNotFoundException.class)
   public ResponseEntity<Object> handlePriceNotFound(
@@ -52,6 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Object> handleUnexpectedException(
       Exception exception, HttpServletRequest request) {
+    LOGGER.error("Unexpected exception while processing request", exception);
     return problemResponse(
         HttpStatus.INTERNAL_SERVER_ERROR,
         "Internal Server Error",
