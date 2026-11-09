@@ -22,7 +22,7 @@
 - [X] **T-05 (verde)** Implementar los value objects anteriores como `record`, con validación en sus constructores, hasta pasar T-04. Commit `feat:`.
 - [X] **T-06 (rojo)** Escribir pruebas de `PriceSelector`: gana mayor prioridad; tarifa única; colección vacía; inicio y fin inclusivos; empate resuelto por `priceList` mayor. Comprobar el fallo esperado. Commit `test:`.
 - [X] **T-07 (verde)** Implementar `Price`, `PriceSelector` y el comparador/estrategia de desempate. Resolver la decisión entre selección en dominio y consulta SQL y documentar ADR 1/2 en `research.md` o README, manteniendo el dominio como fuente de la regla. Commit `feat:`.
-- [ ] **T-08 (refactor)** Revisar nombres y lenguaje ubicuo del dominio sin cambiar comportamiento; mantener todas las pruebas verdes. Commit `refactor:`.
+- [X] **T-08 (refactor)** Revisar nombres y lenguaje ubicuo del dominio sin cambiar comportamiento; mantener todas las pruebas verdes. Commit `refactor:`.
 
 ## Fase 2: Aplicación
 

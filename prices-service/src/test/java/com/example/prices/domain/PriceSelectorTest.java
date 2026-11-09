@@ -12,63 +12,71 @@ import org.junit.jupiter.api.Test;
 
 class PriceSelectorTest {
 
-    private final PriceSelector selector = new PriceSelector();
-    private final LocalDateTime queryDate = LocalDateTime.parse("2020-06-14T10:00:00");
+  private final PriceSelector selector = new PriceSelector();
+  private final LocalDateTime queryDate = LocalDateTime.parse("2020-06-14T10:00:00");
 
-    @Test
-    void selectsThePriceWithTheHighestPriority() {
-        Price lowerPriority = price(1, 1, queryDate.minusDays(1), queryDate.plusDays(1));
-        Price higherPriority = price(2, 2, queryDate.minusDays(1), queryDate.plusDays(1));
+  @Test
+  void selectsThePriceWithTheHighestPriority() {
+    Price lowerPriority = price(1, 1, queryDate.minusDays(1), queryDate.plusDays(1));
+    Price higherPriority = price(2, 2, queryDate.minusDays(1), queryDate.plusDays(1));
 
-        assertSame(
-                higherPriority,
-                selector.select(List.of(lowerPriority, higherPriority), queryDate).orElseThrow());
-    }
+    assertSame(
+        higherPriority,
+        selector
+            .selectApplicablePrice(List.of(lowerPriority, higherPriority), queryDate)
+            .orElseThrow());
+  }
 
-    @Test
-    void selectsTheOnlyCandidate() {
-        Price onlyPrice = price(3, 1, queryDate.minusDays(1), queryDate.plusDays(1));
+  @Test
+  void selectsTheOnlyCandidate() {
+    Price onlyPrice = price(3, 1, queryDate.minusDays(1), queryDate.plusDays(1));
 
-        assertSame(onlyPrice, selector.select(List.of(onlyPrice), queryDate).orElseThrow());
-    }
+    assertSame(
+        onlyPrice, selector.selectApplicablePrice(List.of(onlyPrice), queryDate).orElseThrow());
+  }
 
-    @Test
-    void returnsEmptyWhenThereAreNoCandidates() {
-        Optional<Price> selected = selector.select(List.of(), queryDate);
+  @Test
+  void returnsEmptyWhenThereAreNoCandidates() {
+    Optional<Price> selected = selector.selectApplicablePrice(List.of(), queryDate);
 
-        assertFalse(selected.isPresent());
-    }
+    assertFalse(selected.isPresent());
+  }
 
-    @Test
-    void considersStartAndEndDatesInclusive() {
-        LocalDateTime start = queryDate.minusDays(1);
-        LocalDateTime end = queryDate.plusDays(1);
-        Price boundedPrice = price(1, 1, start, end);
+  @Test
+  void considersStartAndEndDatesInclusive() {
+    LocalDateTime start = queryDate.minusDays(1);
+    LocalDateTime end = queryDate.plusDays(1);
+    Price boundedPrice = price(1, 1, start, end);
 
-        assertSame(boundedPrice, selector.select(List.of(boundedPrice), start).orElseThrow());
-        assertSame(boundedPrice, selector.select(List.of(boundedPrice), end).orElseThrow());
-        assertFalse(selector.select(List.of(boundedPrice), start.minusNanos(1)).isPresent());
-        assertFalse(selector.select(List.of(boundedPrice), end.plusNanos(1)).isPresent());
-    }
+    assertSame(
+        boundedPrice, selector.selectApplicablePrice(List.of(boundedPrice), start).orElseThrow());
+    assertSame(
+        boundedPrice, selector.selectApplicablePrice(List.of(boundedPrice), end).orElseThrow());
+    assertFalse(
+        selector.selectApplicablePrice(List.of(boundedPrice), start.minusNanos(1)).isPresent());
+    assertFalse(
+        selector.selectApplicablePrice(List.of(boundedPrice), end.plusNanos(1)).isPresent());
+  }
 
-    @Test
-    void breaksPriorityTiesByTheGreaterPriceListId() {
-        Price lowerPriceList = price(4, 10, queryDate.minusDays(1), queryDate.plusDays(1));
-        Price higherPriceList = price(4, 11, queryDate.minusDays(1), queryDate.plusDays(1));
+  @Test
+  void breaksPriorityTiesByTheGreaterPriceListId() {
+    Price lowerPriceList = price(4, 10, queryDate.minusDays(1), queryDate.plusDays(1));
+    Price higherPriceList = price(4, 11, queryDate.minusDays(1), queryDate.plusDays(1));
 
-        assertSame(
-                higherPriceList,
-                selector.select(List.of(lowerPriceList, higherPriceList), queryDate).orElseThrow());
-    }
+    assertSame(
+        higherPriceList,
+        selector
+            .selectApplicablePrice(List.of(lowerPriceList, higherPriceList), queryDate)
+            .orElseThrow());
+  }
 
-    private Price price(
-            int priority, long priceListId, LocalDateTime start, LocalDateTime end) {
-        return new Price(
-                new BrandId(1),
-                new DateRange(start, end),
-                new PriceListId(priceListId),
-                new ProductId(35455),
-                priority,
-                new Money(new BigDecimal("35.50"), Currency.getInstance("EUR")));
-    }
+  private Price price(int priority, long priceListId, LocalDateTime start, LocalDateTime end) {
+    return new Price(
+        new BrandId(1),
+        new DateRange(start, end),
+        new PriceListId(priceListId),
+        new ProductId(35455),
+        priority,
+        new Money(new BigDecimal("35.50"), Currency.getInstance("EUR")));
+  }
 }
