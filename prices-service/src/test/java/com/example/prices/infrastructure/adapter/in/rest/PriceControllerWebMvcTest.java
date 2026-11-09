@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -165,6 +166,7 @@ class PriceControllerWebMvcTest {
     mockMvc
         .perform(post("/api/v1/prices"))
         .andExpect(status().isMethodNotAllowed())
+        .andExpect(header().string("Allow", "GET"))
         .andExpect(problemContentType())
         .andExpect(jsonPath("$.title").value("Method Not Allowed"))
         .andExpect(jsonPath("$.status").value(405))
