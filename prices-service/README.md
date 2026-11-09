@@ -12,6 +12,10 @@ Servicio REST para consultar el precio aplicable a un producto y una cadena en u
 
 Los identificadores de producto y cadena deben ser positivos. Si no hay una tarifa aplicable, la respuesta es `404`.
 
+## Contrato API
+
+El [contrato OpenAPI](src/main/resources/openapi/prices-api.yaml) es la fuente de verdad y no tiene Swagger UI integrado. Las pruebas de contrato validan respuestas reales con sus esquemas; omiten únicamente la validación RFC 3339 del formato `date-time`, porque S-1 define fechas locales sin zona ni offset.
+
 ## Contrato generado
 
 `mvn generate-sources` genera la interfaz y los modelos en `target/generated-sources/openapi`; esos archivos no se versionan. El DTO del contrato `com.example.prices.infrastructure.adapter.in.rest.generated.model.ProblemDetail` y el tipo HTTP `org.springframework.http.ProblemDetail` conservan paquetes distintos. La interfaz generada usa el DTO del contrato; el manejo de errores REST debe referirse explícitamente al tipo de Spring, sin importar ambos nombres simples en una misma clase.
