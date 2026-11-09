@@ -6,9 +6,9 @@
 
 ## Decisiones
 
-### R-01 — La decisión de precio pertenece al dominio
+### ADR-01 — La decisión de precio pertenece al dominio
 
-**Decisión**: Persistencia filtra candidatos por cadena, producto y vigencia; el dominio compara candidatos por prioridad descendente y, en empate, por `priceList` descendente.
+**Decisión**: Persistencia filtra candidatos por cadena, producto y vigencia; el dominio comprueba los límites inclusivos de la vigencia y selecciona por prioridad descendente y, en empate, por `priceList` descendente. No se selecciona la tarifa ganadora en SQL.
 
 **Motivo**: conserva la regla determinista en una única ubicación independiente de SQL y permite probarla sin Spring o H2. Con el volumen de cuatro registros de referencia, recuperar las tarifas aplicables es suficiente. La consulta puede usar el índice compuesto sugerido sin seleccionar la tarifa final.
 
