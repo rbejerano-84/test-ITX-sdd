@@ -21,15 +21,31 @@ class PriceAcceptanceTest {
   @Autowired private MockMvc mockMvc;
 
   @Test
-  void returnsTheApplicablePriceForEachReferenceScenario() throws Exception {
+  void test1_requestAt10OnDay14() throws Exception {
     assertApplicablePrice(
         "2020-06-14T10:00:00", 1, "2020-06-14T00:00:00", "2020-12-31T23:59:59", "35.50");
+  }
+
+  @Test
+  void test2_requestAt16OnDay14() throws Exception {
     assertApplicablePrice(
         "2020-06-14T16:00:00", 2, "2020-06-14T15:00:00", "2020-06-14T18:30:00", "25.45");
+  }
+
+  @Test
+  void test3_requestAt21OnDay14() throws Exception {
     assertApplicablePrice(
         "2020-06-14T21:00:00", 1, "2020-06-14T00:00:00", "2020-12-31T23:59:59", "35.50");
+  }
+
+  @Test
+  void test4_requestAt10OnDay15() throws Exception {
     assertApplicablePrice(
         "2020-06-15T10:00:00", 3, "2020-06-15T00:00:00", "2020-06-15T11:00:00", "30.50");
+  }
+
+  @Test
+  void test5_requestAt21OnDay16() throws Exception {
     assertApplicablePrice(
         "2020-06-16T21:00:00", 4, "2020-06-15T16:00:00", "2020-12-31T23:59:59", "38.95");
   }
