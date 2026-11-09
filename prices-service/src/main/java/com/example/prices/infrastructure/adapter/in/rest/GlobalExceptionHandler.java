@@ -105,7 +105,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         status,
         "Method Not Allowed",
         "Method '" + exception.getMethod() + "' is not supported",
-        requestPath(request));
+        requestPath(request),
+        List.of(),
+        headers);
   }
 
   @Override
@@ -197,9 +199,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       String detail,
       String instance,
       List<FieldError> errors) {
+    return problemResponse(status, title, detail, instance, errors, new HttpHeaders());
+  }
+
+  private ResponseEntity<Object> problemResponse(
+      HttpStatusCode status,
+      String title,
+      String detail,
+      String instance,
+      List<FieldError> errors,
+      HttpHeaders headers) {
     ProblemDetail problem =
         new ProblemDetail(title, status.value()).detail(detail).instance(instance).errors(errors);
-    return ResponseEntity.status(status).contentType(PROBLEM_JSON).body(problem);
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.putAll(headers);
+    responseHeaders.setContentType(PROBLEM_JSON);
+    return new ResponseEntity<>(problem, responseHeaders, status);
   }
 
   private String requestPath(WebRequest request) {
