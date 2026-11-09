@@ -17,13 +17,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class GetApplicablePriceServiceTest {
 
   private final PriceRepository priceRepository = mock(PriceRepository.class);
-  private final PriceSelector priceSelector = mock(PriceSelector.class);
+  private final PriceSelector priceSelector = new PriceSelector();
   private final GetApplicablePriceService service =
       new GetApplicablePriceService(priceRepository, priceSelector);
 
@@ -33,33 +32,27 @@ class GetApplicablePriceServiceTest {
 
   @Test
   void returnsThePriceSelectedByTheDomainSelector() {
-    Price candidate = price(1, 1);
     Price winningPrice = price(2, 2);
-    List<Price> candidates = List.of(candidate, winningPrice);
+    Price candidate = price(1, 9);
+    List<Price> candidates = List.of(winningPrice, candidate);
     when(priceRepository.findApplicablePrices(brandId, productId, applicationDate))
         .thenReturn(candidates);
-    when(priceSelector.selectApplicablePrice(candidates, applicationDate))
-        .thenReturn(Optional.of(winningPrice));
 
     Price result = service.getApplicablePrice(brandId, productId, applicationDate);
 
     assertSame(winningPrice, result);
     verify(priceRepository).findApplicablePrices(brandId, productId, applicationDate);
-    verify(priceSelector).selectApplicablePrice(candidates, applicationDate);
   }
 
   @Test
   void throwsPriceNotFoundWhenThereAreNoCandidates() {
     when(priceRepository.findApplicablePrices(brandId, productId, applicationDate))
         .thenReturn(List.of());
-    when(priceSelector.selectApplicablePrice(List.of(), applicationDate))
-        .thenReturn(Optional.empty());
 
     assertThrows(
         PriceNotFoundException.class,
         () -> service.getApplicablePrice(brandId, productId, applicationDate));
-
-    verify(priceSelector).selectApplicablePrice(List.of(), applicationDate);
+    verify(priceRepository).findApplicablePrices(brandId, productId, applicationDate);
   }
 
   private Price price(int priority, long priceListId) {
