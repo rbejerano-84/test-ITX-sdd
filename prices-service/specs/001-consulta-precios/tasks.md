@@ -45,12 +45,12 @@
 
 - [X] **T-16 (rojo)** Escribir `@SpringBootTest` con MockMvc para los cinco casos del enunciado y sus resultados exactos: 2020-06-14T10:00 → lista 1, 35.50; 2020-06-14T16:00 → lista 2, 25.45; 2020-06-14T21:00 → lista 1, 35.50; 2020-06-15T10:00 → lista 3, 30.50; 2020-06-16T21:00 → lista 4, 38.95. Comprobar el fallo esperado. Commit `test:`.
 - [X] **T-17 (verde)** Ajustar el cableado de `BeanConfig` y la integración hasta pasar los cinco tests de aceptación. Commit `feat:`.
-- [ ] **T-18a (rojo)** Añadir tests de aceptación para los escenarios adicionales de la spec: producto inexistente y fechas sin tarifa → 404; límites inclusivos; desempate por `priceList` mayor; parámetros ausentes/inválidos; método y formato no admitidos; error inesperado sin detalles internos. Cubrir los escenarios adicionales 6 a 10 previstos en el seed y comprobar fallos de regresión cuando corresponda. Commit `test:`.
-- [ ] **T-18b (verde)** Implementar cualquier comportamiento faltante que revelen T-18a sin duplicar reglas entre capas; pasar los tests de aceptación y MVC relacionados. Commit `feat:`.
+- [X] **T-18a (rojo)** Añadir tests de aceptación para los escenarios adicionales de la spec: producto inexistente y fechas sin tarifa → 404; límites inclusivos; desempate por `priceList` mayor; parámetros ausentes/inválidos; método y formato no admitidos; error inesperado sin detalles internos. Cubrir los escenarios adicionales 6 a 10 previstos en el seed y comprobar fallos de regresión cuando corresponda. Commit `test:`.
+- [X] **T-18b (verde)** Implementar cualquier comportamiento faltante que revelen T-18a sin duplicar reglas entre capas; pasar los tests de aceptación y MVC relacionados. No se detectaron comportamientos faltantes. Sin cambios de implementación.
 
 ## Fase 6: Arquitectura y calidad
 
-- [ ] **T-19a (rojo)** Escribir reglas ArchUnit que comprueben que el dominio no depende de Spring/JPA/Jackson, que aplicación no depende de infraestructura y que no hay ciclos entre capas. Confirmar que detectan una violación de forma controlada y comprobar el estado inicial. Commit `test:`.
+- [X] **T-19a (rojo)** Escribir reglas ArchUnit que comprueben que el dominio no depende de Spring/JPA/Jackson, que aplicación no depende de infraestructura y que no hay ciclos entre capas. Confirmar que detectan una violación de forma controlada y comprobar el estado inicial. Commit `test:`.
 - [ ] **T-19b (verde/refactor)** Corregir cualquier violación arquitectónica detectada por T-19a y dejar las reglas verdes, preservando los límites hexagonales. Commit `refactor:`.
 - [ ] **T-20** Configurar JaCoCo para exigir al menos 80% de cobertura de líneas global y Spotless para comprobar formato durante `mvn verify`; ejecutar `mvn clean verify` y ajustar el formato/cobertura mediante pruebas relevantes, no reduciendo el umbral. Commit `feat:`.
 - [ ] **T-21a (rojo)** Crear un test de contrato que valide las respuestas reales 200 y de error contra `src/main/resources/openapi/prices-api.yaml`; comprobar que detecta discrepancias y que pasa con la implementación actual. Commit `test:`.
