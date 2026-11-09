@@ -8,7 +8,7 @@ public record Price(
     DateRange validityPeriod,
     PriceListId priceList,
     ProductId productId,
-    int priority,
+    Priority priority,
     Money money) {
 
   public Price {
@@ -16,6 +16,7 @@ public record Price(
     Objects.requireNonNull(validityPeriod, "Validity period is required");
     Objects.requireNonNull(priceList, "Price list is required");
     Objects.requireNonNull(productId, "Product ID is required");
+    Objects.requireNonNull(priority, "Priority is required");
     Objects.requireNonNull(money, "Money is required");
   }
 

@@ -2,6 +2,8 @@ package com.example.prices.application;
 
 import com.example.prices.domain.BrandId;
 import com.example.prices.domain.Price;
+import com.example.prices.domain.PriceNotFoundException;
+import com.example.prices.domain.PriceRepository;
 import com.example.prices.domain.PriceSelector;
 import com.example.prices.domain.ProductId;
 import java.time.LocalDateTime;

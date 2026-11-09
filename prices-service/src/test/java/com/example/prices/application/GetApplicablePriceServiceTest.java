@@ -12,7 +12,10 @@ import com.example.prices.domain.DateRange;
 import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceListId;
+import com.example.prices.domain.PriceNotFoundException;
+import com.example.prices.domain.PriceRepository;
 import com.example.prices.domain.PriceSelector;
+import com.example.prices.domain.Priority;
 import com.example.prices.domain.ProductId;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -67,7 +70,7 @@ class GetApplicablePriceServiceTest {
         new DateRange(applicationDate.minusDays(1), applicationDate.plusDays(1)),
         new PriceListId(priceListId),
         productId,
-        priority,
+        new Priority(priority),
         new Money(new BigDecimal("35.50"), Currency.getInstance("EUR")));
   }
 }

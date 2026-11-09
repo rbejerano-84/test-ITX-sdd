@@ -1,7 +1,5 @@
-package com.example.prices.application;
+package com.example.prices.domain;
 
-import com.example.prices.domain.BrandId;
-import com.example.prices.domain.ProductId;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

@@ -88,7 +88,7 @@ class PriceSelectorTest {
         new DateRange(start, end),
         new PriceListId(priceListId),
         new ProductId(35455),
-        priority,
+        new Priority(priority),
         new Money(new BigDecimal("35.50"), Currency.getInstance("EUR")));
   }
 }

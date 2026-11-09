@@ -1,8 +1,8 @@
 package com.example.prices.infrastructure.adapter.out.persistence;
 
-import com.example.prices.application.PriceRepository;
 import com.example.prices.domain.BrandId;
 import com.example.prices.domain.Price;
+import com.example.prices.domain.PriceRepository;
 import com.example.prices.domain.ProductId;
 import java.time.LocalDateTime;
 import java.util.List;

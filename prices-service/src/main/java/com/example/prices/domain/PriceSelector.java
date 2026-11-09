@@ -9,7 +9,7 @@ import java.util.Optional;
 public class PriceSelector {
 
   private static final Comparator<Price> SELECTION_ORDER =
-      Comparator.comparingInt(Price::priority)
+      Comparator.comparingInt((Price price) -> price.priority().value())
           .thenComparingLong(price -> price.priceList().value());
 
   public Optional<Price> selectApplicablePrice(

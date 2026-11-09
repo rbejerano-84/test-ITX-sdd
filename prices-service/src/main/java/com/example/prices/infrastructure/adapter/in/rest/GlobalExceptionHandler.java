@@ -1,6 +1,6 @@
 package com.example.prices.infrastructure.adapter.in.rest;
 
-import com.example.prices.application.PriceNotFoundException;
+import com.example.prices.domain.PriceNotFoundException;
 import com.example.prices.infrastructure.adapter.in.rest.generated.model.FieldError;
 import com.example.prices.infrastructure.adapter.in.rest.generated.model.ProblemDetail;
 import jakarta.servlet.http.HttpServletRequest;

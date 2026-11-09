@@ -3,12 +3,13 @@ package com.example.prices.infrastructure.adapter.out.persistence;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.prices.application.PriceRepository;
 import com.example.prices.domain.BrandId;
 import com.example.prices.domain.DateRange;
 import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceListId;
+import com.example.prices.domain.PriceRepository;
+import com.example.prices.domain.Priority;
 import com.example.prices.domain.ProductId;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -152,7 +153,7 @@ class PricePersistenceDataJpaTest {
         price.validityPeriod());
     assertEquals(new PriceListId(expectedPriceList), price.priceList());
     assertEquals(new ProductId(35455), price.productId());
-    assertEquals(expectedPriority, price.priority());
+    assertEquals(new Priority(expectedPriority), price.priority());
     assertEquals(
         new Money(new BigDecimal(expectedAmount), Currency.getInstance("EUR")), price.money());
   }

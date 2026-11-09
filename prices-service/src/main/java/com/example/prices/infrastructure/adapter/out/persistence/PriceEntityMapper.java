@@ -5,6 +5,7 @@ import com.example.prices.domain.DateRange;
 import com.example.prices.domain.Money;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceListId;
+import com.example.prices.domain.Priority;
 import com.example.prices.domain.ProductId;
 import java.util.Currency;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class PriceEntityMapper {
         new DateRange(entity.getStartDate(), entity.getEndDate()),
         new PriceListId(entity.getPriceList()),
         new ProductId(entity.getProductId()),
-        entity.getPriority(),
+        new Priority(entity.getPriority()),
         new Money(entity.getPrice(), Currency.getInstance(entity.getCurrency().trim())));
   }
 }
