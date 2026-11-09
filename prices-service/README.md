@@ -36,6 +36,17 @@ La suite de contrato valida respuestas reales `200`, `400` y `404` contra el YAM
 
 H2 se crea en memoria e inicializa el esquema y los cuatro registros de referencia desde `src/main/resources/schema.sql` y `src/main/resources/data.sql`.
 
+## Ejecución con Docker
+
+Construir la imagen desde la raíz del proyecto y ejecutar el servicio:
+
+```powershell
+docker build -t prices-service .
+docker run --rm -p 8080:8080 prices-service
+```
+
+La compilación ejecuta `mvn clean verify` en una etapa con JDK 21. La imagen final usa JRE 21 y ejecuta la aplicación como usuario no root.
+
 ## Consultar un precio
 
 ```powershell
