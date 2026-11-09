@@ -31,11 +31,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest
-@Import(PriceControllerWebMvcTest.UseCaseConfiguration.class)
+@Import({PriceControllerWebMvcTest.UseCaseConfiguration.class, PriceRestMapper.class})
 class PriceControllerWebMvcTest {
 
-  private static final LocalDateTime APPLICATION_DATE =
-      LocalDateTime.parse("2020-06-14T10:00:00");
+  private static final LocalDateTime APPLICATION_DATE = LocalDateTime.parse("2020-06-14T10:00:00");
 
   @Autowired private MockMvc mockMvc;
 
@@ -137,7 +136,8 @@ class PriceControllerWebMvcTest {
   void returnsProblemWithRequestedParametersWhenNoPriceIsApplicable() throws Exception {
     when(getApplicablePriceUseCase.getApplicablePrice(
             new BrandId(1), new ProductId(35455), APPLICATION_DATE))
-        .thenThrow(new PriceNotFoundException(new BrandId(1), new ProductId(35455), APPLICATION_DATE));
+        .thenThrow(
+            new PriceNotFoundException(new BrandId(1), new ProductId(35455), APPLICATION_DATE));
 
     mockMvc
         .perform(
@@ -202,8 +202,11 @@ class PriceControllerWebMvcTest {
         .andExpect(jsonPath("$.status").value(500))
         .andExpect(jsonPath("$.detail").value("An unexpected error occurred"))
         .andExpect(jsonPath("$.instance").value("/api/v1/prices"))
-        .andExpect(content().string(org.hamcrest.Matchers.not(
-            org.hamcrest.Matchers.containsString("internal database credential"))));
+        .andExpect(
+            content()
+                .string(
+                    org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString("internal database credential"))));
   }
 
   private static org.springframework.test.web.servlet.ResultMatcher problemContentType() {
@@ -214,8 +217,7 @@ class PriceControllerWebMvcTest {
     return new Price(
         new BrandId(1),
         new DateRange(
-            LocalDateTime.parse("2020-06-14T00:00:00"),
-            LocalDateTime.parse("2020-12-31T23:59:59")),
+            LocalDateTime.parse("2020-06-14T00:00:00"), LocalDateTime.parse("2020-12-31T23:59:59")),
         new PriceListId(1),
         new ProductId(35455),
         0,
