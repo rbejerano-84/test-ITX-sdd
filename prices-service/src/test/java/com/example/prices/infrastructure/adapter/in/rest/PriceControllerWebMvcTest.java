@@ -3,6 +3,7 @@ package com.example.prices.infrastructure.adapter.in.rest;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -29,9 +30,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @WebMvcTest
 @Import({PriceControllerWebMvcTest.UseCaseConfiguration.class, PriceRestMapper.class})
+@ExtendWith(OutputCaptureExtension.class)
 class PriceControllerWebMvcTest {
 
   private static final LocalDateTime APPLICATION_DATE = LocalDateTime.parse("2020-06-14T10:00:00");
@@ -185,7 +190,7 @@ class PriceControllerWebMvcTest {
   }
 
   @Test
-  void returnsGenericProblemForUnexpectedException() throws Exception {
+  void returnsGenericProblemForUnexpectedException(CapturedOutput output) throws Exception {
     when(getApplicablePriceUseCase.getApplicablePrice(
             new BrandId(1), new ProductId(35455), APPLICATION_DATE))
         .thenThrow(new IllegalStateException("internal database credential"));
@@ -207,6 +212,9 @@ class PriceControllerWebMvcTest {
                 .string(
                     org.hamcrest.Matchers.not(
                         org.hamcrest.Matchers.containsString("internal database credential"))));
+
+    assertThat(output)
+        .contains("ERROR", "IllegalStateException", "internal database credential");
   }
 
   private static org.springframework.test.web.servlet.ResultMatcher problemContentType() {
