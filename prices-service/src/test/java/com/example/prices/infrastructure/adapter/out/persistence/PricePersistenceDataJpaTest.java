@@ -3,10 +3,15 @@ package com.example.prices.infrastructure.adapter.out.persistence;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.example.prices.application.PriceRepository;
+import com.example.prices.domain.BrandId;
+import com.example.prices.domain.Price;
+import com.example.prices.domain.ProductId;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +30,8 @@ class PricePersistenceDataJpaTest {
   @Autowired private JdbcTemplate jdbcTemplate;
 
   @Autowired private javax.sql.DataSource dataSource;
+
+  @Autowired private PriceRepository priceRepository;
 
   @Test
   void loadsReferencePricesAndCreatesTheRequiredSchema() throws SQLException {
@@ -57,6 +64,50 @@ class PricePersistenceDataJpaTest {
           readIndexes(metadata)
               .contains(List.of("BRAND_ID", "PRODUCT_ID", "START_DATE", "END_DATE")));
     }
+  }
+
+  @Test
+  void returnsOnlyApplicableCandidatesForTheFiveReferenceScenarios() {
+    assertCandidates("2020-06-14T10:00:00", 1L);
+    assertCandidates("2020-06-14T16:00:00", 1L, 2L);
+    assertCandidates("2020-06-14T21:00:00", 1L);
+    assertCandidates("2020-06-15T10:00:00", 1L, 3L);
+    assertCandidates("2020-06-16T21:00:00", 1L, 4L);
+  }
+
+  @Test
+  void includesCandidatesAtEveryExactValidityBoundary() {
+    assertCandidates("2020-06-14T00:00:00", 1L);
+    assertCandidates("2020-12-31T23:59:59", 1L, 4L);
+    assertCandidates("2020-06-14T15:00:00", 1L, 2L);
+    assertCandidates("2020-06-14T18:30:00", 1L, 2L);
+    assertCandidates("2020-06-15T00:00:00", 1L, 3L);
+    assertCandidates("2020-06-15T11:00:00", 1L, 3L);
+    assertCandidates("2020-06-15T16:00:00", 1L, 4L);
+  }
+
+  @Test
+  void filtersCandidatesByBrandAndProduct() {
+    assertEquals(
+        List.of(),
+        priceRepository.findApplicablePrices(
+            new BrandId(2), new ProductId(35455), LocalDateTime.parse("2020-06-14T10:00:00")));
+    assertEquals(
+        List.of(),
+        priceRepository.findApplicablePrices(
+            new BrandId(1), new ProductId(99999), LocalDateTime.parse("2020-06-14T10:00:00")));
+  }
+
+  private void assertCandidates(String applicationDate, Long... expectedPriceLists) {
+    List<Long> actualPriceLists =
+        priceRepository
+            .findApplicablePrices(
+                new BrandId(1), new ProductId(35455), LocalDateTime.parse(applicationDate))
+            .stream()
+            .map(Price::priceList)
+            .map(priceList -> priceList.value())
+            .toList();
+    assertEquals(List.of(expectedPriceLists), actualPriceLists);
   }
 
   private Map<String, ColumnDefinition> readColumns(DatabaseMetaData metadata) throws SQLException {
