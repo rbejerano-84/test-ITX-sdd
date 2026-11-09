@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,8 +25,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -149,21 +149,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                       ? "An unexpected error occurred"
                       : nonEmptyDetail(springProblemDetail.getDetail()))
               .instance(requestPath(request));
-    } else if (body instanceof ProblemDetail problemDetail) {
-      contractBody = problemDetail;
-      if (contractBody.getTitle() == null) {
-        contractBody.setTitle(titleFor(status));
-      }
-      if (contractBody.getStatus() == null) {
-        contractBody.setStatus(status.value());
-      }
-      if (contractBody.getDetail() == null || status.is5xxServerError()) {
-        contractBody.setDetail(
-            status.is5xxServerError()
-                ? "An unexpected error occurred"
-                : "Request could not be processed");
-      }
-      contractBody.setInstance(requestPath(request));
     } else {
       contractBody =
           new ProblemDetail(titleFor(status), status.value())

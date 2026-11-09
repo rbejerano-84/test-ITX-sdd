@@ -1,9 +1,9 @@
 package com.example.prices.infrastructure.adapter.in.rest;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -24,16 +24,16 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 @WebMvcTest
 @Import({PriceControllerWebMvcTest.UseCaseConfiguration.class, PriceRestMapper.class})
@@ -215,8 +215,7 @@ class PriceControllerWebMvcTest {
                     org.hamcrest.Matchers.not(
                         org.hamcrest.Matchers.containsString("internal database credential"))));
 
-    assertThat(output)
-        .contains("ERROR", "IllegalStateException", "internal database credential");
+    assertThat(output).contains("ERROR", "IllegalStateException", "internal database credential");
   }
 
   private static org.springframework.test.web.servlet.ResultMatcher problemContentType() {
