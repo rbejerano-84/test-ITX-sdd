@@ -55,7 +55,7 @@
 - [X] **T-20** Configurar JaCoCo para exigir al menos 80% de cobertura de líneas global y Spotless para comprobar formato durante `mvn verify`; excluir del cálculo los DTO generados por OpenAPI, ejecutar `mvn clean verify` y ajustar el formato/cobertura mediante pruebas relevantes, no reduciendo el umbral. Commit `feat:`.
 - [X] **T-21a (rojo)** Crear tests de contrato que validen respuestas reales 200, 400 y 404 contra `src/main/resources/openapi/prices-api.yaml`; comprobar que detectan discrepancias con una respuesta deliberadamente inválida y que pasan con la implementación actual. Commit `test:`.
 - [X] **T-21b (verde/refactor)** Corregir cualquier discrepancia de contrato que revele T-21a; publicar el YAML con Swagger UI solo si existe una integración compatible con Boot 4, o enlazarlo desde README si no. No se detectaron discrepancias en las respuestas; se documentó que las fechas locales sin offset de S-1 omiten únicamente la validación RFC 3339 de `date-time`. El YAML queda enlazado desde README, sin añadir Swagger UI.
-- [ ] **T-22** Completar `README.md` con ejecución, ejemplo `curl`, ADRs, supuestos y comandos de pruebas; validar el quickstart. Commit `feat:`.
+- [X] **T-22** Completar `README.md` con ejecución, ejemplo `curl`, ADRs, supuestos y comandos de pruebas; validar el quickstart. Commit `feat:`.
 - [ ] **T-23 (extra)** Añadir Dockerfile multi-stage y plantilla de PR del seed solo si se desea entregar el extra; no bloquea la definición de hecho. Commit `feat:`.
 
 ## Dependencias y orden
