@@ -1,7 +1,7 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 -> 1.2.0
-- Modified principles: I. Contract-First API Design; II. Domain-First Architecture
+- Version change: 1.3.0 -> 1.3.1
+- Modified principles: II. Domain-First Architecture
 - Updated sections: Additional Constraints, Development Workflow
 - Added sections: none
 - Removed sections: none
@@ -16,7 +16,15 @@ Sync Impact Report
 The Prices Service MUST define the REST contract before implementation and treat the OpenAPI schema as the source of truth for request, response, and error shapes. OpenAPI Generator MUST generate the contract interfaces using `interfaceOnly=true`; controllers MUST implement those generated interfaces. All endpoints and generated DTOs MUST match the API specification. A single global `@RestControllerAdvice` MUST produce every RFC 9457 `ProblemDetail` response, with a consistent `title`, `status`, `detail`, and `instance`.
 
 ### II. Domain-First Architecture
-The service MUST use hexagonal architecture with explicit ports and adapters organized into `domain`, `application`, and `infrastructure` packages. Core pricing logic MUST live in `domain`, remain independent from Spring, JPA, Jackson, and HTTP concerns, and follow SOLID principles. The `domain` and `application` layers MUST define business rules, use cases, and ports; `infrastructure` MUST provide adapters. ArchUnit tests MUST automatically verify that `domain` has no dependencies on Spring, JPA, or Jackson. The business rule that resolves the applicable price MUST be explicit, testable, and deterministic.
+The service MUST apply Domain-Driven Design within explicitly documented bounded contexts and use hexagonal architecture inside each context. Every bounded context MUST state its responsibility, ubiquitous language, owned domain concepts, and concepts owned by external contexts. A bounded context MUST NOT be invented for technical layers such as REST, persistence, or messaging.
+
+The current product scope MUST use the single bounded context `pricing` (Aplicación de Precios), which owns tariff applicability and selection. Product and brand identifiers MUST remain external references unless a future specification explicitly brings their models into this context. Business rules MUST live in the context's `domain`, application use cases and application-owned ports in `application`, and technical adapters in `infrastructure`; repository interfaces MUST reside in `domain`. The context MUST remain independent from Spring, JPA, Jackson, and HTTP. ArchUnit tests MUST automatically verify domain dependency rules and the boundaries documented by the specification.
+
+Aggregate roots and business identities MUST be defined only when justified by consistency and lifecycle invariants. Read-only capabilities MUST NOT invent write aggregates or treat database surrogate keys as business identity. The rule that resolves the applicable price MUST be explicit, testable, and deterministic.
+
+The ubiquitous language MUST be documented in a glossary and used consistently across the domain model, application, adapters, and tests. Tactical domain modeling MUST use immutable value objects implemented as Java `record` types with constructor validation. Entities and aggregate roots MUST have an explicit business identity whenever their lifecycle or consistency invariants require one; external-context concepts MUST remain references unless explicitly adopted into this context. The domain model MUST NOT be anemic: invariants and business behavior MUST be expressed by the relevant domain objects or domain services.
+
+Business rules MUST reside in `domain`, never in application use cases or infrastructure adapters. Application code MUST orchestrate use cases without deciding domain outcomes; infrastructure MUST implement technical concerns only. Repository interfaces and domain exceptions MUST be defined within the context's `domain` package tree; repository implementations and exception-to-HTTP translation MUST remain in infrastructure.
 
 ### III. Test-First Delivery
 Every functional behavior MUST start from a failing automated test, and implementation MUST proceed through red-green-refactor discipline. Acceptance, web, and domain tests MUST cover the business rules for price selection, invalid input, and missing record scenarios before release.
@@ -33,6 +41,9 @@ The Prices Service MUST operate within the following guardrails:
 
 - Java 21, Maven, and Spring Boot 4.1.x are the required build environment.
 - The project MUST use a memory-backed H2 database initialized with the four baseline price records described in the product specification.
+- Domain code for price applicability MUST reside in `com.example.prices.domain`; use cases MUST reside in `com.example.prices.application`; technical adapters MUST reside in `com.example.prices.infrastructure`.
+- The ubiquitous language and bounded-context boundaries MUST be specified before implementation changes and reflected consistently in domain code and tests.
+- Tactical domain models MUST document their ubiquitous-language glossary; value objects MUST be immutable validated records, and domain repositories, exceptions, and business behavior MUST remain in `com.example.prices.domain`, without `model`, `service`, `repository`, or `exception` subpackages.
 - Monetary values MUST use `BigDecimal`, ISO-4217 currency values, and local date-time semantics unless a documented exception is approved.
 - The public API MUST expose `GET /api/v1/prices` with `applicationDate`, `productId`, and `brandId` and MUST return the applicable price payload for a successful match.
 - API contract generation MUST be done from the OpenAPI source, with generated interfaces treated as the contract boundary and any controller-only divergence treated as a compliance issue.
@@ -48,6 +59,8 @@ The delivery workflow MUST be aligned with the project specification and technic
 - Every feature change MUST include the relevant tests first and then an implementation that satisfies those tests without broadening scope.
 - Commits MUST be small and focused and use the `test:`, `feat:`, or `refactor:` prefixes as applicable.
 - Architecture reviews MUST confirm that the domain remains independent from frameworks, and cross-layer boundaries MUST follow the documented hexagonal pattern.
+- Domain reviews MUST confirm that each bounded context owns one coherent model, external-context identifiers remain references rather than copied entities, and aggregates protect actual consistency invariants.
+- Domain reviews MUST confirm that the model is non-anemic, application and infrastructure contain no business-rule decisions, and repository interfaces and domain exceptions reside in the domain package tree.
 - Code quality gates MUST include formatting checks, test coverage thresholds, and verification that no API contract drift occurs between the generated interface and the controller behavior.
 - Pull requests MUST state the business rule being changed, the relevant test coverage, and any trade-offs against the constitution so reviewers can verify compliance.
 
@@ -57,4 +70,4 @@ This constitution supersedes ad hoc practices for the Prices Service. Any change
 
 All implementation work MUST verify compliance with this constitution before merge. When a proposed decision conflicts with a principle, the team MUST resolve the conflict in favor of the constitution or amend the constitution explicitly in a separate governance change.
 
-**Version**: 1.2.0 | **Ratified**: 2026-11-08 | **Last Amended**: 2026-11-08
+**Version**: 1.3.1 | **Ratified**: 2026-11-08 | **Last Amended**: 2026-11-09

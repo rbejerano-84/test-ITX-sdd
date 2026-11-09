@@ -8,6 +8,39 @@
 
 **Input**: User description: Servicio REST de consulta de precios de un producto de una cadena en una fecha dada.
 
+## Domain-Driven Design: bounded context
+
+### Bounded context: Aplicación de Precios (`pricing`)
+
+El sistema implementa un único bounded context llamado **Aplicación de Precios**. Su responsabilidad es determinar qué tarifa se aplica a una consulta compuesta por producto, cadena y fecha/hora local, y comunicar el resultado o la ausencia de una tarifa.
+
+Este contexto es propietario de las tarifas que consulta y de las reglas de vigencia, prioridad y desempate. No es propietario del catálogo ni del ciclo de vida de productos, cadenas, ventas o pedidos. `productId` y `brandId` son identificadores externos opacos: el contexto puede validarlos como positivos, pero no resuelve nombres, atributos, estados ni reglas de esos conceptos.
+
+Los límites HTTP/REST, OpenAPI, Spring, JPA y H2 son adaptadores técnicos dentro del contexto; no son bounded contexts ni contienen reglas de selección de negocio. La API REST es el contrato de entrada de este servicio, no una definición adicional del modelo de dominio.
+
+### Lenguaje ubicuo
+
+| Término del contexto | Significado |
+|---|---|
+| **Producto** | Referencia externa identificada por `productId`; no representa un agregado de catálogo dentro de este contexto. |
+| **Cadena** | Referencia externa identificada por `brandId`; no representa un agregado de cadena dentro de este contexto. |
+| **Tarifa** | Oferta de precio de una cadena para un producto, una lista, una prioridad y un periodo de vigencia. |
+| **Lista de tarifas (`priceList`)** | Identificador de la lista asociada a una tarifa; cuando empatan las prioridades, el valor mayor desempata. |
+| **Prioridad** | Precedencia de negocio de una tarifa; entre candidatas aplicables gana el valor mayor. |
+| **Vigencia** | Intervalo local inclusivo `[startDate, endDate]` durante el cual la tarifa puede aplicarse. |
+| **Consulta de precio** | Solicitud de producto, cadena y fecha/hora para la que se busca una tarifa aplicable. |
+| **Precio aplicable** | Tarifa ganadora después de filtrar por identidad y vigencia y ordenar por prioridad y lista. |
+
+El código de dominio y aplicación DEBE usar estos términos con un significado consistente. Los nombres de campos de la API pueden conservarse por compatibilidad, aunque el lenguaje del contrato y el del dominio no sean idénticos.
+
+### Modelo y límites de consistencia
+
+- `PriceQuery` expresa una consulta válida con `ProductId`, `BrandId` y `applicationDate`.
+- `Price` representa una tarifa inmutable del contexto, con `DateRange`, `PriceListId`, prioridad y `Money`.
+- `PriceSelector` decide cuál de las tarifas candidatas es el precio aplicable. La regla pertenece a este contexto y no se duplica en REST, aplicación ni SQL.
+- La consulta es de solo lectura y no modifica tarifas. Por tanto, esta funcionalidad no requiere una raíz de agregado con operaciones de escritura: no se debe inventar una identidad de negocio a partir de la clave técnica de persistencia ni tratar `priceList` como identificador único de una tarifa.
+- Si una funcionalidad futura permite crear o modificar tarifas, deberá definir explícitamente la identidad de la tarifa, sus invariantes de consistencia y su raíz de agregado antes de implementar escrituras.
+
 ## User Scenarios & Testing
 
 ### User Story 1 - Consultar el precio aplicable (Priority: P1)
@@ -80,6 +113,11 @@ Como consumidor del servicio, quiero que se indiquen las entradas inválidas y s
 - **FR-008**: Los errores inesperados MUST responder `500` sin revelar detalles internos.
 - **FR-009**: El resultado MUST incluir el precio y la moneda de la tarifa seleccionada sin conversión monetaria.
 - **FR-010**: El servicio MUST permitir distinguir una solicitud con resultado, una solicitud inválida y una solicitud válida sin tarifa aplicable mediante sus respuestas correspondientes (`200`, `400` y `404`).
+- **FR-011**: El sistema MUST mantener un único bounded context de Aplicación de Precios, propietario de las tarifas consultadas y de la regla de selección.
+- **FR-012**: El dominio MUST tratar `productId` y `brandId` como referencias externas opacas, sin incorporar modelos ni reglas de catálogo de otros contextos.
+- **FR-013**: Las reglas de tarifa, vigencia, prioridad y desempate MUST residir únicamente en el dominio de Aplicación de Precios; los adaptadores MUST traducir datos sin redefinir esas reglas.
+- **FR-014**: El contexto MUST permanecer independiente de REST, OpenAPI, Spring, JPA y H2; esas tecnologías son detalles de entrada, salida o persistencia.
+- **FR-015**: La estructura de paquetes MUST mantener el dominio, la aplicación y la infraestructura en `com.example.prices.domain`, `com.example.prices.application` y `com.example.prices.infrastructure`, respectivamente, sin un nivel intermedio `pricing` ni subpaquetes `model`, `service`, `repository` o `exception` bajo `domain`.
 
 ### Key Entities
 
@@ -103,3 +141,4 @@ Como consumidor del servicio, quiero que se indiquen las entradas inválidas y s
 - La selección por prioridad y el desempate por el identificador de lista siguen las reglas deterministas establecidas por la constitución del proyecto.
 - La consulta solo lee precios existentes; crear o modificar tarifas, convertir monedas, autenticación y limitación de peticiones quedan fuera de esta funcionalidad.
 - Los límites numéricos concretos de los identificadores no están definidos en el enunciado; cualquier valor fuera del rango admitido por el servicio se considera entrada inválida.
+- El alcance actual contiene un único bounded context porque solo existe una política de negocio: aplicar tarifas. No se crean contextos artificiales para producto, cadena, HTTP o persistencia.
