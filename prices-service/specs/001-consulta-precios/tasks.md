@@ -43,8 +43,8 @@
 
 ## Fase 5: Aceptación
 
-- [ ] **T-16 (rojo)** Escribir `@SpringBootTest` con MockMvc para los cinco casos del enunciado y sus resultados exactos: 2020-06-14T10:00 → lista 1, 35.50; 2020-06-14T16:00 → lista 2, 25.45; 2020-06-14T21:00 → lista 1, 35.50; 2020-06-15T10:00 → lista 3, 30.50; 2020-06-16T21:00 → lista 4, 38.95. Comprobar el fallo esperado. Commit `test:`.
-- [ ] **T-17 (verde)** Ajustar el cableado de `BeanConfig` y la integración hasta pasar los cinco tests de aceptación. Commit `feat:`.
+- [X] **T-16 (rojo)** Escribir `@SpringBootTest` con MockMvc para los cinco casos del enunciado y sus resultados exactos: 2020-06-14T10:00 → lista 1, 35.50; 2020-06-14T16:00 → lista 2, 25.45; 2020-06-14T21:00 → lista 1, 35.50; 2020-06-15T10:00 → lista 3, 30.50; 2020-06-16T21:00 → lista 4, 38.95. Comprobar el fallo esperado. Commit `test:`.
+- [X] **T-17 (verde)** Ajustar el cableado de `BeanConfig` y la integración hasta pasar los cinco tests de aceptación. Commit `feat:`.
 - [ ] **T-18a (rojo)** Añadir tests de aceptación para los escenarios adicionales de la spec: producto inexistente y fechas sin tarifa → 404; límites inclusivos; desempate por `priceList` mayor; parámetros ausentes/inválidos; método y formato no admitidos; error inesperado sin detalles internos. Cubrir los escenarios adicionales 6 a 10 previstos en el seed y comprobar fallos de regresión cuando corresponda. Commit `test:`.
 - [ ] **T-18b (verde)** Implementar cualquier comportamiento faltante que revelen T-18a sin duplicar reglas entre capas; pasar los tests de aceptación y MVC relacionados. Commit `feat:`.
 
