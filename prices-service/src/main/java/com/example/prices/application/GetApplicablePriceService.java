@@ -26,6 +26,6 @@ public class GetApplicablePriceService implements GetApplicablePriceUseCase {
 
     return priceSelector
         .selectApplicablePrice(candidates, applicationDate)
-        .orElseThrow(PriceNotFoundException::new);
+        .orElseThrow(() -> new PriceNotFoundException(brandId, productId, applicationDate));
   }
 }

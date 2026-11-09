@@ -27,7 +27,7 @@
 ## Fase 2: Aplicación
 
 - [X] **T-09 (rojo)** Escribir pruebas de `GetApplicablePriceService` con `PriceRepository` mockeado y `PriceSelector` real: devuelve la tarifa ganadora y lanza `PriceNotFoundException` cuando no hay candidatas. Comprobar que fallan. Commit `test:`.
-- [X] **T-10 (verde)** Definir `GetApplicablePriceUseCase` y `PriceRepository` como puertos e implementar `GetApplicablePriceService` para pasar T-09. Commit `feat:`.
+- [X] **T-10 (verde)** Definir `GetApplicablePriceUseCase` y `PriceRepository` como puertos e implementar `GetApplicablePriceService` para pasar T-09; incluir los datos de consulta en `PriceNotFoundException`. Commit `feat:`.
 
 ## Fase 3: Persistencia
 
