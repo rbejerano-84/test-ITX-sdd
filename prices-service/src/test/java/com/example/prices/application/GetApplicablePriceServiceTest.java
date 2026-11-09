@@ -1,6 +1,7 @@
 package com.example.prices.application;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,9 +50,14 @@ class GetApplicablePriceServiceTest {
     when(priceRepository.findApplicablePrices(brandId, productId, applicationDate))
         .thenReturn(List.of());
 
-    assertThrows(
+    PriceNotFoundException exception =
+        assertThrows(
         PriceNotFoundException.class,
         () -> service.getApplicablePrice(brandId, productId, applicationDate));
+
+    assertEquals(
+        "No applicable price for brand 1, product 35455 at 2020-06-14T10:00",
+        exception.getMessage());
     verify(priceRepository).findApplicablePrices(brandId, productId, applicationDate);
   }
 
