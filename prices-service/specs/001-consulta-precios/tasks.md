@@ -31,8 +31,8 @@
 
 ## Fase 3: Persistencia
 
-- [ ] **T-11a (rojo)** Escribir un `@DataJpaTest` que compruebe la carga de los cuatro registros iniciales y la estructura necesaria para consultarlos. Ejecutar y comprobar el fallo esperado antes de crear el esquema y los datos. Commit `test:`.
-- [ ] **T-11b (verde)** Crear `schema.sql` y `data.sql` con los cuatro registros de referencia y el índice compuesto previsto; pasar T-11a. Commit `feat:`.
+- [X] **T-11a (rojo)** Escribir un `@DataJpaTest` que compruebe la carga de los cuatro registros iniciales y la estructura necesaria para consultarlos. Ejecutar y comprobar el fallo esperado antes de crear el esquema y los datos. Commit `test:`.
+- [X] **T-11b (verde)** Crear `schema.sql` y `data.sql` con los cuatro registros de referencia y el índice compuesto previsto; pasar T-11a. Commit `feat:`.
 - [ ] **T-12 (rojo)** Ampliar `@DataJpaTest` para comprobar que la consulta devuelve solo candidatas por producto, cadena y fecha en cada escenario, incluidos los extremos del periodo. Comprobar el fallo esperado antes de implementar el adaptador. Commit `test:`.
 - [ ] **T-13 (verde)** Implementar `PriceEntity`, `PriceJpaRepository`, `PriceEntityMapper` y `PricePersistenceAdapter`, sin trasladar la regla final de prioridad/desempate fuera del dominio. Pasar T-12. Commit `feat:`.
 

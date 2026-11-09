@@ -7,8 +7,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -46,14 +48,14 @@ class PricePersistenceDataJpaTest {
           columns.keySet());
       assertEquals("DECIMAL", columns.get("PRICE").typeName());
       assertEquals(2, columns.get("PRICE").decimalDigits());
-      assertEquals("CHAR", columns.get("CURRENCY").typeName());
+      assertEquals("CHARACTER", columns.get("CURRENCY").typeName());
       assertEquals(3, columns.get("CURRENCY").size());
       assertEquals("TIMESTAMP", columns.get("START_DATE").typeName());
       assertEquals("TIMESTAMP", columns.get("END_DATE").typeName());
       assertEquals(Set.of("ID"), readPrimaryKeys(metadata));
       assertTrue(
           readIndexes(metadata)
-              .contains(Set.of("BRAND_ID", "PRODUCT_ID", "START_DATE", "END_DATE")));
+              .contains(List.of("BRAND_ID", "PRODUCT_ID", "START_DATE", "END_DATE")));
     }
   }
 
@@ -82,7 +84,7 @@ class PricePersistenceDataJpaTest {
     return primaryKeys;
   }
 
-  private Set<Set<String>> readIndexes(DatabaseMetaData metadata) throws SQLException {
+  private Set<List<String>> readIndexes(DatabaseMetaData metadata) throws SQLException {
     Map<String, Map<Short, String>> indexes = new HashMap<>();
     try (ResultSet resultSet = metadata.getIndexInfo(null, null, "PRICES", false, false)) {
       while (resultSet.next()) {
@@ -95,9 +97,9 @@ class PricePersistenceDataJpaTest {
         }
       }
     }
-    Set<Set<String>> columnsByIndex = new HashSet<>();
+    Set<List<String>> columnsByIndex = new HashSet<>();
     for (Map<Short, String> columns : indexes.values()) {
-      columnsByIndex.add(new HashSet<>(columns.values()));
+      columnsByIndex.add(new ArrayList<>(columns.values()));
     }
     return columnsByIndex;
   }
