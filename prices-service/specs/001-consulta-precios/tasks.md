@@ -38,7 +38,7 @@
 
 ## Fase 4: REST
 
-- [ ] **T-14 (rojo)** Escribir pruebas `@WebMvcTest` del controlador y del advice, una por cada respuesta de aplicación del plan: 200 con JSON esperado; 400 por parámetro ausente, fecha inválida, ID no numérico o menor que 1, con `errors[]`; 404 con `ProblemDetail`; POST → 405; `Accept: application/xml` → 406; excepción inesperada → 500 genérico sin filtrar detalles. Verificar `application/problem+json` en errores y comprobar que las pruebas fallan. Commit `test:`.
+- [X] **T-14 (rojo)** Escribir pruebas `@WebMvcTest` del controlador y del advice, una por cada respuesta de aplicación del plan: 200 con JSON esperado; 400 por parámetro ausente, fecha inválida, ID no numérico o menor que 1, con `errors[]`; 404 con `ProblemDetail`; POST → 405; `Accept: application/xml` → 406; excepción inesperada → 500 genérico sin filtrar detalles. Verificar `application/problem+json` en errores y comprobar que las pruebas fallan. Commit `test:`.
 - [ ] **T-15 (verde)** Implementar `PriceController` sobre la interfaz `PricesApi` generada, `PriceRestMapper` hacia DTOs generados y `GlobalExceptionHandler` como único `@RestControllerAdvice`, usando `ProblemDetail` sin ambigüedad con el tipo generado. Pasar T-14. Commit `feat:`.
 
 ## Fase 5: Aceptación
