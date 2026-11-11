@@ -47,6 +47,7 @@
 - [X] **T-17 (verde)** Ajustar el cableado de `BeanConfig` y la integración hasta pasar los cinco tests de aceptación. Commit `feat:`.
 - [X] **T-18a (rojo)** Añadir tests de aceptación para los escenarios adicionales de la spec: producto inexistente y fechas sin tarifa → 404; límites inclusivos; desempate por `priceList` mayor; parámetros ausentes/inválidos; método y formato no admitidos; error inesperado sin detalles internos. Cubrir los escenarios adicionales 6 a 10 previstos en el seed y comprobar fallos de regresión cuando corresponda. Commit `test:`.
 - [X] **T-18b (verde)** Implementar cualquier comportamiento faltante que revelen T-18a sin duplicar reglas entre capas; pasar los tests de aceptación y MVC relacionados. No se detectaron comportamientos faltantes. Sin cambios de implementación.
+- [X] **T-18c (E2E)** Satisfacer TR-001 a TR-003 de `spec.md`: verificar por HTTP real en un servidor con puerto aleatorio los cinco escenarios de referencia, incluyendo lista, importe y moneda, además de `404` por precio ausente y `400` que identifica el parámetro inválido, ambos con `application/problem+json`.
 
 ## Fase 6: Arquitectura y calidad
 
@@ -64,6 +65,7 @@
 - T-04 → T-05, T-06 → T-07 y T-09 → T-10 son ciclos rojo-verde explícitos; T-08 refactoriza el dominio ya probado.
 - T-11a → T-11b → T-12 → T-13 prepara datos y luego implementa la consulta de persistencia contra pruebas previas.
 - T-14 → T-15, T-16 → T-17 y T-18a → T-18b mantienen el orden TDD en REST y aceptación.
+- T-18c satisface TR-001 a TR-003 y verifica extremo a extremo el contrato publicado, el servidor HTTP, la aplicación y la persistencia.
 - T-19a → T-19b conserva ArchUnit del seed y corrige lo detectado; T-20 configura la calidad y T-21a → T-21b mantiene el orden TDD del contrato antes de su publicación.
 - T-22 y T-23 completan la documentación y el extra. Omitir T-24 y T-25 del seed (API key, autenticación y `SecurityConfig`), que son opcionales y están fuera de alcance.
 

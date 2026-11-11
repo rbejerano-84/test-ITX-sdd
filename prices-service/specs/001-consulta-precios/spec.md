@@ -119,6 +119,12 @@ Como consumidor del servicio, quiero que se indiquen las entradas inválidas y s
 - **FR-014**: El contexto MUST permanecer independiente de REST, OpenAPI, Spring, JPA y H2; esas tecnologías son detalles de entrada, salida o persistencia.
 - **FR-015**: La estructura de paquetes MUST mantener el dominio, la aplicación y la infraestructura en `com.example.prices.domain`, `com.example.prices.application` y `com.example.prices.infrastructure`, respectivamente, sin un nivel intermedio `pricing` ni subpaquetes `model`, `service`, `repository` o `exception` bajo `domain`.
 
+### Testing Requirements
+
+- **TR-001**: La suite MUST incluir pruebas end-to-end automatizadas que inicien la aplicación completa en un puerto HTTP aleatorio y realicen peticiones HTTP por ese puerto; `MockMvc` por sí solo no satisface este requisito.
+- **TR-002**: Las pruebas end-to-end MUST recorrer el adaptador REST, el caso de uso y la persistencia inicializada con los datos de referencia, y verificar los cinco escenarios de aceptación con su `priceList`, importe y moneda esperados.
+- **TR-003**: Las pruebas end-to-end MUST verificar por HTTP que una consulta sin tarifa devuelve `404` con `application/problem+json` y que una consulta con parámetros inválidos devuelve `400` con `application/problem+json` e identifica el parámetro inválido.
+
 ### Key Entities
 
 - **Consulta de precio**: Producto, cadena y fecha/hora para los que se solicita el precio.
@@ -132,6 +138,7 @@ Como consumidor del servicio, quiero que se indiquen las entradas inválidas y s
 - **SC-002**: Todas las consultas sin tarifa aplicable de los escenarios descritos responden `404`.
 - **SC-003**: Todas las entradas ausentes o inválidas de los escenarios descritos responden `400` e identifican el parámetro correspondiente.
 - **SC-004**: Las consultas exactamente en el inicio o fin de vigencia incluyen la tarifa; los empates de prioridad se resuelven a favor de la lista mayor.
+- **SC-005**: Las pruebas end-to-end ejercitan la aplicación completa mediante HTTP real en un puerto aleatorio y verifican los cinco resultados de referencia y las respuestas `400` y `404`.
 
 ## Assumptions
 

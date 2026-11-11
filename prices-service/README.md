@@ -15,7 +15,7 @@ Desde PowerShell en la raíz del proyecto:
 .\mvnw.cmd clean verify
 ```
 
-`verify` genera y compila la interfaz OpenAPI, ejecuta las pruebas unitarias, de aplicación, persistencia, MVC, aceptación y contrato, aplica las reglas ArchUnit, comprueba el formato con Spotless y exige al menos un 80% de cobertura de líneas JaCoCo. Los DTO generados por OpenAPI se excluyen del cálculo de cobertura.
+`verify` genera y compila la interfaz OpenAPI, ejecuta las pruebas unitarias, de aplicación, persistencia, MVC, aceptación, E2E y contrato, aplica las reglas ArchUnit, comprueba el formato con Spotless y exige al menos un 80% de cobertura de líneas JaCoCo. Los DTO generados por OpenAPI se excluyen del cálculo de cobertura. `PriceEndToEndTest` inicia el servidor en un puerto aleatorio y hace peticiones HTTP reales.
 
 Comandos útiles:
 
