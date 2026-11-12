@@ -8,7 +8,7 @@
 
 Implementar `GET /api/v1/prices` para devolver la tarifa aplicable a un producto, cadena y fecha/hora local. El modelo pertenece al bounded context **Aplicación de Precios** (`pricing`): este contexto conoce las tarifas y decide su aplicabilidad, pero solo conserva `productId` y `brandId` como referencias externas opacas. La selección usa rangos inclusivos y gana la prioridad más alta; en caso de empate, gana el `priceList` mayor. El contrato OpenAPI es la fuente de verdad y genera la interfaz que implementará el adaptador REST. La aplicación seguirá DDD táctico y arquitectura hexagonal, con Java 21, Maven, Spring Boot 4.1.x y H2 en memoria inicializada por `schema.sql` y `data.sql`.
 
-El contrato derivado de `docs/seed/prices-api.yaml` está en `src/main/resources/openapi/prices-api.yaml`. Conserva las diez respuestas documentadas y los modelos del seed, pero no declara autenticación: la especificación excluye autenticación. Las respuestas `401`, `403`, `429` y `503` describen respuestas posibles del gateway o de la infraestructura, no errores generados por esta aplicación.
+El contrato está en `src/main/resources/openapi/prices-api.yaml`. Conserva las diez respuestas documentadas, pero no declara autenticación: la especificación excluye autenticación. Las respuestas `401`, `403`, `429` y `503` describen respuestas posibles del gateway o de la infraestructura, no errores generados por esta aplicación.
 
 ## Contexto técnico
 
@@ -98,7 +98,7 @@ src/
 7. Añadir los escenarios de aceptación, límites y ausencia de precio; verificar integración completa.
 8. Aplicar reglas ArchUnit que verifiquen el contexto y sus límites, cobertura mínima, formato y validación de respuestas frente al YAML; completar README y guía de ejecución.
 
-La secuencia detallada de tareas TDD se deriva en `docs/seed/tasks.md` y será trasladada a `tasks.md` en la fase de tareas, no en este plan.
+La secuencia detallada de tareas TDD está en `tasks.md`, no en este plan.
 
 ## Archivos de diseño
 
