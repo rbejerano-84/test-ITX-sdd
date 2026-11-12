@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -120,51 +119,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         status, "Not Acceptable", "Could not find acceptable representation", requestPath(request));
   }
 
-  @Override
-  protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
-      HttpMediaTypeNotSupportedException exception,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    return problemResponse(
-        status,
-        "Unsupported Media Type",
-        "The request media type is not supported",
-        requestPath(request));
-  }
-
-  @Override
-  protected ResponseEntity<Object> createResponseEntity(
-      Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-    ProblemDetail contractBody;
-    if (body instanceof org.springframework.http.ProblemDetail springProblemDetail) {
-      contractBody =
-          new ProblemDetail(
-                  springProblemDetail.getTitle() == null
-                      ? titleFor(status)
-                      : springProblemDetail.getTitle(),
-                  status.value())
-              .detail(
-                  status.is5xxServerError()
-                      ? "An unexpected error occurred"
-                      : nonEmptyDetail(springProblemDetail.getDetail()))
-              .instance(requestPath(request));
-    } else {
-      contractBody =
-          new ProblemDetail(titleFor(status), status.value())
-              .detail(
-                  status.is5xxServerError()
-                      ? "An unexpected error occurred"
-                      : "Request could not be processed")
-              .instance(requestPath(request));
-    }
-
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.putAll(headers);
-    responseHeaders.setContentType(PROBLEM_JSON);
-    return super.createResponseEntity(contractBody, responseHeaders, status, request);
-  }
-
   private FieldError toFieldError(ConstraintViolation<?> violation) {
     String field = "parameter";
     for (jakarta.validation.Path.Node node : violation.getPropertyPath()) {
@@ -207,14 +161,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       return servletWebRequest.getRequest().getRequestURI();
     }
     return request.getDescription(false).replaceFirst("^uri=", "");
-  }
-
-  private String titleFor(HttpStatusCode status) {
-    HttpStatus resolved = HttpStatus.resolve(status.value());
-    return resolved == null ? "HTTP Error" : resolved.getReasonPhrase();
-  }
-
-  private String nonEmptyDetail(String detail) {
-    return detail == null ? "Request could not be processed" : detail;
   }
 }

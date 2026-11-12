@@ -79,8 +79,6 @@ Los identificadores de producto y cadena deben ser positivos. Las respuestas `40
 - **R-05 — Errores:** un único `@RestControllerAdvice` devuelve Problem Details; los errores inesperados no exponen información interna.
 - **R-06 — Seguridad e infraestructura:** la aplicación no implementa autenticación ni rate limiting; las respuestas externas se mantienen documentadas en el contrato.
 
-El DTO generado `com.example.prices.infrastructure.adapter.in.rest.generated.model.ProblemDetail` y `org.springframework.http.ProblemDetail` son tipos distintos. El advice usa explícitamente el tipo de Spring cuando trata excepciones MVC.
-
 ## Cómo se desarrolló
 
 El servicio se desarrolló con spec-driven development: la especificación, el plan, el modelo de datos y las tareas están en [`specs/001-consulta-precios/`](specs/001-consulta-precios/), y los principios del proyecto en [`.specify/memory/constitution.md`](.specify/memory/constitution.md). El historial de commits sigue ciclos TDD (test en rojo, implementación, refactor).
