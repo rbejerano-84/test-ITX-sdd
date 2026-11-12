@@ -40,17 +40,6 @@ H2 se crea en memoria e inicializa el esquema y los cuatro registros de referenc
 
 Caché de consultas de tarifas (por ejemplo con Caffeine) si el volumen de lecturas lo justificara; con la H2 en memoria actual no aporta mejora medible.
 
-## Ejecución con Docker
-
-Construir la imagen desde la raíz del proyecto y ejecutar el servicio:
-
-```powershell
-docker build -t prices-service .
-docker run --rm -p 8080:8080 prices-service
-```
-
-La compilación ejecuta `mvn clean verify` en una etapa con JDK 21. La imagen final usa JRE 21 y ejecuta la aplicación como usuario no root.
-
 ## Consultar un precio
 
 ```powershell
@@ -58,6 +47,18 @@ curl.exe "http://localhost:8080/api/v1/prices?applicationDate=2020-06-14T10:00:0
 ```
 
 La respuesta incluye `productId`, `brandId`, `priceList`, `startDate`, `endDate`, `price` y `currency`. Para el ejemplo, la lista aplicable es `1`, el precio es `35.50` y la moneda es `EUR`. Si falta o es inválido un parámetro se devuelve `400`; si no hay una tarifa aplicable, `404`.
+
+## Escenarios de referencia
+
+Datos de la prueba: producto `35455`, cadena `1`. Cada fila está cubierta por un test de aceptación y otro de extremo a extremo.
+
+| # | applicationDate | priceList | price |
+|---|---|---|---|
+| 1 | 2020-06-14T10:00:00 | 1 | 35.50 |
+| 2 | 2020-06-14T16:00:00 | 2 | 25.45 |
+| 3 | 2020-06-14T21:00:00 | 1 | 35.50 |
+| 4 | 2020-06-15T10:00:00 | 3 | 30.50 |
+| 5 | 2020-06-16T21:00:00 | 4 | 38.95 |
 
 ## Supuestos del producto
 
@@ -79,3 +80,7 @@ Los identificadores de producto y cadena deben ser positivos. Las respuestas `40
 - **R-06 — Seguridad e infraestructura:** la aplicación no implementa autenticación ni rate limiting; las respuestas externas se mantienen documentadas en el contrato.
 
 El DTO generado `com.example.prices.infrastructure.adapter.in.rest.generated.model.ProblemDetail` y `org.springframework.http.ProblemDetail` son tipos distintos. El advice usa explícitamente el tipo de Spring cuando trata excepciones MVC.
+
+## Cómo se desarrolló
+
+El servicio se desarrolló con spec-driven development: la especificación, el plan, el modelo de datos y las tareas están en [`specs/001-consulta-precios/`](specs/001-consulta-precios/), y los principios del proyecto en [`.specify/memory/constitution.md`](.specify/memory/constitution.md). El historial de commits sigue ciclos TDD (test en rojo, implementación, refactor).
