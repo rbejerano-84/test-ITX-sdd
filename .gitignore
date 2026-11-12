@@ -1,5 +1,10 @@
-# IDE settings
+target/
+*.class
+*.log
 .idea/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+# IDE settings
 
 # Local environment files
 .env
