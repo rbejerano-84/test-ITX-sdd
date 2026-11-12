@@ -8,8 +8,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -23,30 +24,27 @@ class PriceEndToEndTest {
   @Value("${local.server.port}")
   private int port;
 
-  @Test
-  void returnsExpectedPricesForAllFiveReferenceScenarios() throws Exception {
-    List<PriceScenario> scenarios =
-        List.of(
-            new PriceScenario("2020-06-14T10:00:00", 1, "35.50"),
-            new PriceScenario("2020-06-14T16:00:00", 2, "25.45"),
-            new PriceScenario("2020-06-14T21:00:00", 1, "35.50"),
-            new PriceScenario("2020-06-15T10:00:00", 3, "30.50"),
-            new PriceScenario("2020-06-16T21:00:00", 4, "38.95"));
+  @ParameterizedTest(name = "escenario {index}: {0} -> priceList {1}, precio {2}")
+  @CsvSource({
+    "2020-06-14T10:00:00, 1, 35.50",
+    "2020-06-14T16:00:00, 2, 25.45",
+    "2020-06-14T21:00:00, 1, 35.50",
+    "2020-06-15T10:00:00, 3, 30.50",
+    "2020-06-16T21:00:00, 4, 38.95"
+  })
+  void returnsExpectedPriceForReferenceScenario(String applicationDate, int priceList, String price)
+      throws Exception {
+    HttpResponse<String> response = getPrice(applicationDate, "35455", "1");
 
-    for (PriceScenario scenario : scenarios) {
-      HttpResponse<String> response = getPrice(scenario.applicationDate(), "35455", "1");
-
-      assertThat(response.statusCode()).isEqualTo(200);
-      assertThat(response.headers().firstValue("Content-Type").orElse(""))
-          .startsWith("application/json");
-      assertThat(JsonPath.<Integer>read(response.body(), "$.productId")).isEqualTo(35455);
-      assertThat(JsonPath.<Integer>read(response.body(), "$.brandId")).isEqualTo(1);
-      assertThat(JsonPath.<Integer>read(response.body(), "$.priceList"))
-          .isEqualTo(scenario.priceList());
-      assertThat(new BigDecimal(JsonPath.read(response.body(), "$.price").toString()))
-          .isEqualByComparingTo(scenario.price());
-      assertThat(JsonPath.<String>read(response.body(), "$.currency")).isEqualTo("EUR");
-    }
+    assertThat(response.statusCode()).isEqualTo(200);
+    assertThat(response.headers().firstValue("Content-Type").orElse(""))
+        .startsWith("application/json");
+    assertThat(JsonPath.<Integer>read(response.body(), "$.productId")).isEqualTo(35455);
+    assertThat(JsonPath.<Integer>read(response.body(), "$.brandId")).isEqualTo(1);
+    assertThat(JsonPath.<Integer>read(response.body(), "$.priceList")).isEqualTo(priceList);
+    assertThat(new BigDecimal(JsonPath.read(response.body(), "$.price").toString()))
+        .isEqualByComparingTo(price);
+    assertThat(JsonPath.<String>read(response.body(), "$.currency")).isEqualTo("EUR");
   }
 
   @Test
@@ -92,6 +90,4 @@ class PriceEndToEndTest {
 
     return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
   }
-
-  private record PriceScenario(String applicationDate, int priceList, String price) {}
 }
