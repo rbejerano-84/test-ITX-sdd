@@ -36,7 +36,9 @@ La suite de contrato valida respuestas reales `200`, `400` y `404` contra el YAM
 
 H2 se crea en memoria e inicializa el esquema y los cuatro registros de referencia desde `src/main/resources/schema.sql` y `src/main/resources/data.sql`.
 
-El adaptador del repositorio cachea las candidatas por `PriceQuery` con Caffeine, hasta 10 000 consultas durante cinco minutos. El TTL limita la antigüedad de resultados; si se añaden escrituras de tarifas, deberán invalidar las entradas afectadas.
+## Posibles evoluciones
+
+Caché de consultas de tarifas (por ejemplo con Caffeine) si el volumen de lecturas lo justificara; con la H2 en memoria actual no aporta mejora medible.
 
 ## Ejecución con Docker
 

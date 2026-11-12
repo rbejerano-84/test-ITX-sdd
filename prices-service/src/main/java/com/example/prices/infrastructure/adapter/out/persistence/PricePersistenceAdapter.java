@@ -3,10 +3,8 @@ package com.example.prices.infrastructure.adapter.out.persistence;
 import com.example.prices.domain.Price;
 import com.example.prices.domain.PriceQuery;
 import com.example.prices.domain.PriceRepository;
-import com.example.prices.infrastructure.config.CacheConfig;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +22,6 @@ public class PricePersistenceAdapter implements PriceRepository {
   }
 
   @Override
-  @Cacheable(cacheNames = CacheConfig.PRICE_QUERY_CACHE, key = "#query", sync = true)
   public List<Price> findApplicablePrices(PriceQuery query) {
     Objects.requireNonNull(query, "Price query is required");
     return priceJpaRepository

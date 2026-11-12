@@ -16,7 +16,7 @@ El contrato derivado de `docs/seed/prices-api.yaml` está en `src/main/resources
 
 **Build y framework**: Maven Wrapper, Spring Boot 4.1.x
 
-**Dependencias principales**: Spring Web MVC, Spring Data JPA, Spring Cache con Caffeine, Bean Validation, H2; OpenAPI Generator Maven Plugin
+**Dependencias principales**: Spring Web MVC, Spring Data JPA, Bean Validation, H2; OpenAPI Generator Maven Plugin
 
 **Persistencia**: H2 en memoria, esquema y cuatro registros iniciales mediante `schema.sql` y `data.sql`
 
@@ -26,7 +26,7 @@ El contrato derivado de `docs/seed/prices-api.yaml` está en `src/main/resources
 
 **Objetivo de rendimiento**: sin requisito cuantitativo en la especificación
 
-**Restricciones**: timestamps locales sin zona; `BigDecimal`; fechas inclusivas; caché acotada por tamaño y TTL; no exponer detalles internos en errores
+**Restricciones**: timestamps locales sin zona; `BigDecimal`; fechas inclusivas; no exponer detalles internos en errores
 **Alcance**: consulta de lectura de precios; no incluye escritura, conversión monetaria ni autenticación de la aplicación
 
 El generador debe usar `interfaceOnly=true`; el mapeo de `format: date-time` debe producir `java.time.LocalDateTime` (`DateTime=java.time.LocalDateTime` en `typeMappings`). La versión y las opciones compatibles con Spring Boot 4.1.x se fijarán mediante el spike de generación antes de depender de los tipos generados. La salida estará bajo `target/generated-sources`, nunca versionada.
@@ -63,7 +63,6 @@ El código se organizará directamente en `com.example.prices.domain`, `com.exam
 4. **Importes**: `BigDecimal` y moneda ISO-4217; no hay conversión.
 5. **Errores**: un `@RestControllerAdvice` basado en `ResponseEntityExceptionHandler` adapta errores HTTP y de negocio al formato Problem Details acordado; `instance` representa la ruta.
 6. **Contrato externo**: se mantienen las diez respuestas `200`, `400`, `401`, `403`, `404`, `405`, `406`, `429`, `500` y `503`. Los cuatro estados originados externamente se documentan como gateway/infraestructura.
-7. **Caché de consultas**: el adaptador de persistencia cachea las candidatas de `PriceRepository` por el `PriceQuery` completo usando Spring Cache y Caffeine. El caché local se limita a 10 000 entradas y expira cinco minutos después de escribirse; no afecta al dominio ni cambia la regla de selección. Si se incorporan escrituras de tarifas, deberán invalidarse las entradas afectadas.
 
 ## Estructura del proyecto
 
@@ -94,7 +93,7 @@ src/
 2. Crear el proyecto Maven, configurar Java 21, Boot 4.1.x, Wrapper, calidad y el espacio de paquetes acordado para dominio, aplicación e infraestructura.
 3. Validar el contrato YAML y configurar OpenAPI Generator; comprobar que `PricesApi`, `PriceResponse`, `ProblemDetail` y `FieldError` se generan y compilan con `LocalDateTime`.
 4. Construir primero los tests y value objects del dominio del contexto; implementar `PriceSelector` y las reglas inclusivas/de desempate usando el lenguaje ubicuo.
-5. Definir los puertos y el caso de uso; después crear esquema, datos, adapter JPA, caché de consultas y pruebas de persistencia sin filtrar tipos técnicos al dominio.
+5. Definir los puertos y el caso de uso; después crear esquema, datos, adapter JPA y pruebas de persistencia sin filtrar tipos técnicos al dominio.
 6. Crear pruebas MVC para el contrato y sus errores; implementar el adaptador REST, mapper y el único advice.
 7. Añadir los escenarios de aceptación, límites y ausencia de precio; verificar integración completa.
 8. Aplicar reglas ArchUnit que verifiquen el contexto y sus límites, cobertura mínima, formato y validación de respuestas frente al YAML; completar README y guía de ejecución.
