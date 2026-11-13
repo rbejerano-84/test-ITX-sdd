@@ -1,5 +1,6 @@
 package com.example.prices;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,17 +17,13 @@ import org.junit.jupiter.api.Test;
 
 class ArchitectureTest {
 
-  private static final ArchRule DOMAIN_MUST_NOT_DEPEND_ON_FRAMEWORKS =
-      noClasses()
+  private static final ArchRule DOMAIN_MUST_ONLY_DEPEND_ON_JAVA_AND_ITSELF =
+      classes()
           .that()
           .resideInAPackage("com.example.prices.domain..")
           .should()
-          .dependOnClassesThat()
-          .resideInAnyPackage(
-              "org.springframework..",
-              "jakarta.persistence..",
-              "com.fasterxml.jackson..",
-              "tools.jackson..");
+          .onlyDependOnClassesThat()
+          .resideInAnyPackage("java..", "com.example.prices.domain..");
 
   private static final ArchRule APPLICATION_MUST_NOT_DEPEND_ON_INFRASTRUCTURE =
       noClasses()
@@ -54,8 +51,8 @@ class ArchitectureTest {
   }
 
   @Test
-  void domainDoesNotDependOnFrameworks() {
-    DOMAIN_MUST_NOT_DEPEND_ON_FRAMEWORKS.check(productionClasses);
+  void domainOnlyDependsOnJavaAndItself() {
+    DOMAIN_MUST_ONLY_DEPEND_ON_JAVA_AND_ITSELF.check(productionClasses);
   }
 
   @Test
@@ -73,7 +70,7 @@ class ArchitectureTest {
     JavaClasses fixtureClasses =
         new ClassFileImporter().importClasses(DomainArchitectureViolationFixture.class);
 
-    EvaluationResult result = DOMAIN_MUST_NOT_DEPEND_ON_FRAMEWORKS.evaluate(fixtureClasses);
+    EvaluationResult result = DOMAIN_MUST_ONLY_DEPEND_ON_JAVA_AND_ITSELF.evaluate(fixtureClasses);
 
     assertThat(result.hasViolation()).isTrue();
     assertThat(result.getFailureReport().getDetails())
