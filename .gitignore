@@ -3,7 +3,6 @@ target/
 *.log
 .idea/
 *.iml
-.mvn/wrapper/maven-wrapper.jar
 
 # Local environment files
 .env
