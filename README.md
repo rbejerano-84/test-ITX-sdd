@@ -1,6 +1,40 @@
 # Prices Service
 
+[![build](https://github.com/rbejerano-84/test-ITX-sdd/actions/workflows/build.yml/badge.svg)](https://github.com/rbejerano-84/test-ITX-sdd/actions/workflows/build.yml)
+
 Servicio REST para consultar el precio aplicable a un producto y una cadena en una fecha y hora determinada. El contrato de la API es [`src/main/resources/openapi/prices-api.yaml`](src/main/resources/openapi/prices-api.yaml).
+
+## Arquitectura
+
+Arquitectura hexagonal. El dominio no depende de ningún framework y las dependencias apuntan siempre hacia dentro (lo verifica `ArchitectureTest`).
+
+```mermaid
+flowchart LR
+    Client([Cliente HTTP]) --> Controller
+    subgraph infrastructure
+        Controller["PriceController<br/>adaptador de entrada REST"]
+        Adapter["PricePersistenceAdapter<br/>adaptador de salida JPA / H2"]
+    end
+    subgraph application
+        UseCase["GetApplicablePriceUseCase<br/>GetApplicablePriceService"]
+    end
+    subgraph domain
+        Domain["Price, PriceSelector<br/>PriceRepository (puerto)"]
+    end
+    Controller --> UseCase
+    UseCase --> Domain
+    Adapter -. implementa .-> Domain
+```
+
+```text
+com.example.prices
+├── domain                      Modelo y reglas de negocio, sin frameworks
+├── application                 Caso de uso
+└── infrastructure
+    ├── adapter.in.rest         Controlador, mapper y gestión de errores
+    ├── adapter.out.persistence Entidad JPA y adaptador del repositorio
+    └── config                  Cableado de beans
+```
 
 ## Requisitos
 
