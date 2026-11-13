@@ -13,7 +13,7 @@
 
 - [X] **T-01** Inicializar el proyecto Maven con Java 21, Spring Boot 4.1.x y Maven Wrapper; añadir web, data-jpa, validation, H2 y las dependencias/plugins de ArchUnit, JaCoCo y Spotless. Configurar la estructura base de paquetes. Commit `feat:`.
 - [X] **T-02** Crear `README.md` base y reflejar los supuestos S-1 a S-5 del plan, incluyendo hora local sin zona, rangos inclusivos y resolución determinista. Commit `feat:`.
-- [X] **T-03a** Revisar y completar `src/main/resources/openapi/prices-api.yaml` como contrato fuente de verdad: parámetros, `PriceResponse`, `ProblemDetail`, `FieldError`, las diez respuestas 200/400/401/403/404/405/406/429/500/503, ejemplos y respuestas de gateway/infraestructura. Validar el YAML con un linter (por ejemplo, Spectral) sin errores. Commit `feat:`.
+- [X] **T-03a** Revisar y completar `src/main/resources/openapi/prices-api.yaml` como contrato fuente de verdad: parámetros, `PriceResponse`, `ProblemDetail`, `FieldError`, las diez respuestas 200/400/401/403/404/405/406/429/500/503, ejemplos y respuestas de gateway/infraestructura. Validar el YAML con un linter sin errores (comprobación puntual, la configuración no se conserva en el repositorio). Commit `feat:`.
 - [X] **T-03b** Hacer el spike de OpenAPI Generator: fijar versión y opciones compatibles con Boot 4.1/Java 21; configurar `interfaceOnly`, generación en `target/generated-sources`, paquetes `generated` y mapeo de `DateTime` a `LocalDateTime`. Ejecutar `mvn generate-sources` y compilar `PricesApi`, `PriceResponse`, `ProblemDetail` y `FieldError`. Comprobar y resolver explícitamente el posible choque entre el `ProblemDetail` generado y `org.springframework.http.ProblemDetail` (paquete/imports o mapeo apropiado), sin versionar `target/`. Si no hay solución compatible, activar el plan B del plan y documentarlo en README. Commit `feat:`.
 
 ## Fase 1: Dominio
@@ -57,7 +57,7 @@
 - [X] **T-21a (rojo)** Crear tests de contrato que validen respuestas reales 200, 400 y 404 contra `src/main/resources/openapi/prices-api.yaml`; comprobar que detectan discrepancias con una respuesta deliberadamente inválida y que pasan con la implementación actual. Commit `test:`.
 - [X] **T-21b (verde/refactor)** Corregir cualquier discrepancia de contrato que revele T-21a; publicar el YAML con Swagger UI solo si existe una integración compatible con Boot 4, o enlazarlo desde README si no. No se detectaron discrepancias en las respuestas; se documentó que las fechas locales sin offset de S-1 omiten únicamente la validación RFC 3339 de `date-time`. El YAML queda enlazado desde README, sin añadir Swagger UI.
 - [X] **T-22** Completar `README.md` con ejecución, ejemplo `curl`, ADRs, supuestos y comandos de pruebas; validar el quickstart. Commit `feat:`.
-- [X] **T-23 (extra)** Añadir Dockerfile multi-stage y plantilla de PR del seed. El Dockerfile ejecuta `mvn clean verify` en la etapa de build y usa una imagen JRE no-root para ejecución. Commit `feat:`.
+- [ ] **T-23 (extra)** Descartada: Dockerfile y plantilla de PR quedan fuera del alcance para mantener el código mínimo.
 
 ## Dependencias y orden
 
